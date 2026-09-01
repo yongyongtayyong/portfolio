@@ -1,0 +1,74 @@
+---
+import Layout from '../layouts/Layout.astro';
+import MondayCounter from '../components/MondayCounter.astro';
+import Instruments from '../components/Instruments.astro';
+import TrainingWeek from '../components/TrainingWeek.astro';
+import Bookshelf from '../components/Bookshelf.astro';
+import Turntable from '../components/Turntable.astro';
+import Climber from '../components/Climber.astro';
+import FoodMap from '../components/FoodMap.astro';
+
+const strip = ["Off duty", "New York City", "Singapore", "Off duty", "New York City", "Singapore", "Off duty", "New York City"];
+---
+
+<Layout title="Personal — Tay Yong">
+  <section class="wrap" style="margin-top:0;padding-top:30vh">
+    <p class="label reveal">Off the clock</p>
+    <h1 class="display-sm">
+      <span class="reveal" style="--d:80ms;display:block">Off</span>
+      <span class="reveal" style="--d:220ms;display:block"><em>Duty</em></span>
+    </h1>
+    <MondayCounter />
+  </section>
+
+  <div class="wrap"><div class="strip">{strip.map((s) => <span>{s}</span>)}</div></div>
+
+  <section class="wrap">
+    <p class="label reveal">01 — Music</p>
+    <p class="quote reveal">
+      Life is a lot like jazz. It's better when you improvise.
+      George Gershwin
+    </p>
+    <Turntable />
+    <h2 class="stack-head reveal" style="margin-top:8rem"><span>What</span><span>I Play</span></h2>
+    <Instruments />
+  </section>
+
+  <section class="wrap">
+    <p class="label reveal">02 — Training</p>
+    <h2 class="stack-head reveal"><span>The</span><span>Week</span></h2>
+    <p class="lede reveal" style="--d:80ms">
+      Upper. Lower. Run. Twice through, then a day off — and the rest day
+      only unlocks once the other six are logged.
+    </p>
+    <TrainingWeek />
+  </section>
+
+  <section class="wrap narrow">
+    <p class="label reveal">03 — Climbing</p>
+    <p class="quote reveal">
+      Without a rope there is no fear, because to fall is unthinkable.
+    </p>
+    <Climber />
+  </section>
+
+  <section class="wrap">
+    <p class="label reveal">04 — Reading</p>
+    <h2 class="stack-head reveal"><span>The</span><span>Library</span></h2>
+    <p class="quote reveal">
+      A reader lives a thousand lives before he dies. The man who never reads lives only one.
+      George R. R. Martin
+    </p>
+    <Bookshelf />
+  </section>
+
+  <section class="wrap">
+    <p class="label reveal">05 — Eating</p>
+    <h2 class="stack-head reveal"><span>Living To Eat,</span><span>Not Eating To Live</span></h2>
+    <FoodMap />
+  </section>
+
+  <section class="wrap">
+    <a class="big-link reveal" href="/">← Back to work</a>
+  </section>
+</Layout>

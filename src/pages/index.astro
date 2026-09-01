@@ -1,11 +1,93 @@
 ---
-import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
+import Cover from '../components/Cover.astro';
+import Coursework from '../components/Coursework.astro';
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const ticker = ["Python", "SQL", "PySpark", "Databricks", "Machine Learning", "Astro", "Node.js", "Tableau", "R", "Feature Engineering"];
+
+const roles = [
+  { org: "ONDO", title: "AI Engineer, Data and Operations Intern", date: "2026 —",
+    note: "Sustainable DTC sock brand in New York. Building the internal tooling layer: automated waitlist milestone tracking, retention marketing dashboards and a competitor intelligence tool amongst others." },
+  { org: "DSO National Laboratories", title: "Research Intern", date: "2026",
+    note: "Mathematical research into the security assumptions behind next-generation cryptographic standards. Combined pure mathematics and experimental work to rigorously prove cryptographic standards." },
+  { org: "Shopee", title: "Business Analyst Intern", date: "2025",
+    note: "SQL dashboards tracking first-mile delivery KPIs across five Southeast Asian markets, surfacing the operational gaps that cut average delivery time." },
+  { org: "Singtel", title: "AI / Data Science Intern", date: "2025",
+    note: "Analysed 10M+ row customer datasets in PySpark and Databricks to isolate churn risk segments, feeding a retention campaign aimed at 50,000+ subscribers. Built and validated a predictive model end to end." },
+];
+
+const projects = [
+  { name: "Personal Telegram Bot", kind: "bot", img: "", href: "",
+    blurb: "A personal assistant living in Telegram. Modular architecture with feature autoloading, a flow state machine, and a deterministic test harness.",
+    stack: "Node.js · Telegram API · Railway" },
+  { name: "Pulse", kind: "pulse", img: "", href: "",
+    blurb: "Co-founded a fitness tech startup building wearable biomechanics tracking. Led a four-person team from ideation to a shipped MVP.",
+    stack: "Product · Computer Vision · Mobile" },
+  { name: "Pairs Trading Backtest", kind: "trading", img: "", href: "",
+    blurb: "Mean-reversion strategy on the MA–V pair via Engle–Granger, with dynamic z-score entry and exit. Walk-forward tested on 2016–2025 out-of-sample data.",
+    stack: "Python · statsmodels · pandas" },
+  { name: "Sentiment Analysis", kind: "sentiment", img: "", href: "",
+    blurb: "TF-IDF pipeline over review text. Compared vectorisation and model choices across themes; pushed accuracy past 80%.",
+    stack: "Python · scikit-learn · NLTK" },
+];
 ---
 
-<Layout>
-	<Welcome />
+<Layout title="Tay Yong">
+  <section class="wrap" style="margin-top:0;padding-top:32vh">
+    <p class="label reveal">Pure Mathematics, Data &amp; Machine Learning — New York</p>
+    <h1 class="display reveal" style="--d:80ms">Tay <em>Yong</em></h1>
+    <p class="lede reveal" style="--d:260ms;margin-top:2.5rem">
+      Mathematics and Data Science &amp; Analytics Double Major and a minor in Philosophy in the
+      National University of Singapore (NUS)
+    </p>
+  </section>
+
+  <div class="marquee">
+    <div class="marquee-track">{[...ticker, ...ticker].map((t) => <span>{t}</span>)}</div>
+  </div>
+
+  <section class="wrap">
+    <p class="label reveal">01 — Experience</p>
+    {roles.map((r, i) => (
+      <div class="row reveal" style={"--d:" + i * 90 + "ms"}>
+        <span class="row-num">0{i + 1}</span>
+        <div>
+          <div class="row-org">{r.org}</div>
+          <div class="row-role">{r.title}</div>
+          <div class="row-note"><div><p>{r.note}</p></div></div>
+        </div>
+        <span class="row-date">{r.date}</span>
+      </div>
+    ))}
+  </section>
+
+  <section class="wrap">
+    <p class="label reveal">02 — Projects</p>
+    <div class="grid">
+      {projects.map((p, i) => (
+        <article class="card reveal" style={"--d:" + i * 90 + "ms"}>
+          <Cover kind={p.kind} index={i + 1} img={p.img} alt={p.name} />
+          <h3>{p.href ? <a href={p.href} target="_blank" rel="noopener">{p.name} ↗</a> : p.name}</h3>
+          <p>{p.blurb}</p>
+          <div class="stack">{p.stack}</div>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="wrap">
+    <p class="label reveal">03 — Coursework</p>
+    <Coursework />
+  </section>
+
+  <section class="wrap">
+    <p class="label reveal">04 — Contact</p>
+    <a class="big-link reveal" href="mailto:you@example.com">Say hello</a>
+    <div class="socials reveal" style="--d:120ms">
+      <a href="https://github.com/yongyongtayyong" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://www.linkedin.com/in/yong-tay/" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="/personal">Personal</a>
+      <a href="/resume.pdf" target="_blank" rel="noopener">CV</a>
+    </div>
+  </section>
 </Layout>

@@ -1,0 +1,179 @@
+---
+const whites = [
+  { n: "C", f: 261.63, k: "a" }, { n: "D", f: 293.66, k: "s" },
+  { n: "E", f: 329.63, k: "d" }, { n: "F", f: 349.23, k: "f" },
+  { n: "G", f: 392.00, k: "g" }, { n: "A", f: 440.00, k: "h" },
+  { n: "B", f: 493.88, k: "j" },
+];
+const blacks = [
+  { i: 0, n: "C♯", f: 277.18, k: "w" }, { i: 1, n: "D♯", f: 311.13, k: "e" },
+  { i: 3, n: "F♯", f: 369.99, k: "t" }, { i: 4, n: "G♯", f: 415.30, k: "y" },
+  { i: 5, n: "A♯", f: 466.16, k: "u" },
+];
+const bowed = [
+  { name: "Violin", strings: [{ n: "G3", f: 196.00 }, { n: "D4", f: 293.66 }, { n: "A4", f: 440.00 }, { n: "E5", f: 659.25 }] },
+  { name: "Viola",  strings: [{ n: "C3", f: 130.81 }, { n: "G3", f: 196.00 }, { n: "D4", f: 293.66 }, { n: "A4", f: 440.00 }] },
+];
+---
+<div class="inst-grid">
+  <div class="inst">
+    <div class="inst-stage">
+      <svg viewBox="0 0 300 170">
+        {whites.map((w, i) => (
+          <g class="key wk" data-f={w.f} data-k={w.k} data-n={w.n}>
+            <rect x={10 + i * 40} y="42" width="36" height="104" rx="2" />
+            <text x={28 + i * 40} y="134" class="k-lab">{w.n}</text>
+          </g>
+        ))}
+        {blacks.map((b) => (
+          <g class="key bk" data-f={b.f} data-k={b.k} data-n={b.n}>
+            <rect x={37 + b.i * 40} y="42" width="22" height="64" rx="1.5" />
+            <text x={48 + b.i * 40} y="98" class="b-lab">{b.n}</text>
+          </g>
+        ))}
+      </svg>
+    </div>
+    <h3 class="inst-name">Keys</h3>
+    <p class="inst-sub">Click, or play A W S E D F T G Y H U J</p>
+  </div>
+
+  {bowed.map((b) => (
+    <div class="inst">
+      <div class="inst-stage">
+        <svg viewBox="0 0 300 170">
+          <rect x="120" y="12" width="60" height="146" rx="6" class="fb" />
+          <path d="M100 62 q-11 16 0 32" class="fh" />
+          <path d="M200 62 q11 16 0 32" class="fh" />
+          <line x1="112" y1="122" x2="188" y2="122" class="bridge" />
+          {b.strings.map((s, i) => (
+            <g class="key str" data-f={s.f} data-n={s.n}>
+              <rect x={126 + i * 16 - 7} y="14" width="14" height="140" fill="transparent" />
+              <line x1={126 + i * 16} y1="18" x2={126 + i * 16} y2="152" />
+              <text x={126 + i * 16} y="168" class="s-lab">{s.n}</text>
+            </g>
+          ))}
+          <g class="bow"><rect x="30" y="0" width="240" height="4" rx="2" /></g>
+        </svg>
+      </div>
+      <h3 class="inst-name">{b.name}</h3>
+      <p class="inst-sub">Pluck an open string</p>
+    </div>
+  ))}
+</div>
+
+<p class="readout" id="lastNote"></p>
+
+<style>
+  .inst-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 1.5rem; margin-top: 3.5rem; }
+  .inst {
+    border: 1px solid var(--rule); border-radius: 2px; background: var(--panel); padding: 1.5rem;
+    transition: border-color 0.6s var(--ease), transform 0.6s var(--ease);
+  }
+  .inst:hover { border-color: var(--accent-dim); transform: translateY(-6px); }
+  .inst-stage { border-radius: 2px; background: #0e0c09; padding: 0.9rem 0.5rem; margin-bottom: 1.3rem; }
+  .inst-stage svg { width: 100%; height: auto; display: block; overflow: visible; }
+  .inst-name { font-family: var(--serif); font-size: 1.35rem; font-weight: 400; margin: 0; }
+  .inst-sub {
+    font-family: var(--sans); font-size: 0.56rem; font-weight: 400;
+    letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin: 0.5rem 0 0;
+  }
+  .readout {
+    font-family: var(--sans); font-size: 0.62rem; letter-spacing: 0.24em;
+    text-transform: uppercase; color: var(--accent); min-height: 1.4em;
+    margin-top: 1.75rem; padding-top: 1.25rem; border-top: 1px solid var(--rule);
+  }
+
+  .key { cursor: pointer; }
+  .wk rect {
+    fill: #e8e2d6; stroke: #0c0a08; stroke-width: 1.2;
+    transform-box: view-box; transform-origin: center; transition: fill 0.14s, transform 0.1s;
+  }
+  .wk:hover rect { fill: #fbf7ee; }
+  .wk.hit rect { fill: var(--accent); transform: translateY(4px); }
+  .k-lab { text-anchor: middle; font-family: var(--sans); font-size: 8.5px; fill: #8b8378; pointer-events: none; letter-spacing: 0.08em; }
+  .wk.hit .k-lab { fill: #0c0a08; }
+
+  .bk rect {
+    fill: #14100c; stroke: #0c0a08; stroke-width: 1;
+    transform-box: view-box; transform-origin: center; transition: fill 0.14s, transform 0.1s;
+  }
+  .bk:hover rect { fill: #241e17; }
+  .bk.hit rect { fill: var(--accent-dim); transform: translateY(4px); }
+  .b-lab { text-anchor: middle; font-family: var(--sans); font-size: 7px; fill: #6b6154; pointer-events: none; }
+  .bk.hit .b-lab { fill: #0c0a08; }
+
+  .fb { fill: #16120e; stroke: var(--rule); }
+  .fh { stroke: #2e2820; stroke-width: 2.5; fill: none; stroke-linecap: round; }
+  .bridge { stroke: #3a332a; stroke-width: 3; stroke-linecap: round; }
+  .str line { stroke: #c9c3b6; stroke-width: 1.4; transform-box: view-box; transform-origin: center; transition: stroke 0.15s; }
+  .str:hover line { stroke: #fbf7ee; }
+  .str.hit line { stroke: var(--accent); animation: vib 0.09s linear 8; }
+  @keyframes vib { 0%, 100% { transform: translateX(-1.2px); } 50% { transform: translateX(1.2px); } }
+  .s-lab { text-anchor: middle; font-family: var(--sans); font-size: 8px; fill: #4a4238; pointer-events: none; letter-spacing: 0.06em; }
+  .str.hit .s-lab { fill: var(--accent); }
+
+  .bow { transform-box: view-box; transform-origin: center; animation: sweep 3.6s ease-in-out infinite; }
+  .bow rect { fill: var(--accent); opacity: 0.4; }
+  @keyframes sweep {
+    0%, 100% { transform: translateY(46px) rotate(-1.5deg); }
+    50% { transform: translateY(120px) rotate(1.5deg); }
+  }
+  @media (prefers-reduced-motion: reduce) { .bow { animation: none; } }
+</style>
+
+<script>
+  let ctx = null, master = null;
+  const audio = () => {
+    if (ctx) return ctx;
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return null;
+    ctx = new AC();
+    master = ctx.createGain();
+    master.gain.value = 0.45;
+    master.connect(ctx.destination);
+    return ctx;
+  };
+
+  const lastEl = document.getElementById("lastNote");
+
+  const play = (freq, isString) => {
+    const c = audio();
+    if (!c) return;
+    if (c.state === "suspended") c.resume();
+    const t0 = c.currentTime;
+    const osc = c.createOscillator();
+    const g = c.createGain();
+    const lp = c.createBiquadFilter();
+    osc.type = isString ? "sawtooth" : "triangle";
+    osc.frequency.value = freq;
+    lp.type = "lowpass"; lp.frequency.value = isString ? 2600 : 2000;
+    const dur = isString ? 1.6 : 1.9;
+    g.gain.setValueAtTime(0, t0);
+    g.gain.linearRampToValueAtTime(0.22, t0 + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    osc.connect(lp).connect(g).connect(master);
+    osc.start(t0); osc.stop(t0 + dur + 0.1);
+  };
+
+  const strike = (el) => {
+    const f = parseFloat(el.getAttribute("data-f"));
+    if (!f) return;
+    const isString = el.classList.contains("str");
+    play(f, isString);
+    if (lastEl) lastEl.textContent = (el.getAttribute("data-n") || "") + " · " + Math.round(f) + " Hz";
+    el.classList.add("hit");
+    setTimeout(() => el.classList.remove("hit"), isString ? 700 : 150);
+  };
+
+  document.querySelectorAll(".key").forEach((el) => {
+    el.addEventListener("pointerdown", (e) => { e.preventDefault(); strike(el); });
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.repeat || e.metaKey || e.ctrlKey || e.altKey) return;
+    const tag = (e.target.tagName || "").toLowerCase();
+    if (tag === "input" || tag === "textarea") return;
+    const m = document.querySelector('.key[data-k="' + e.key.toLowerCase() + '"]');
+    if (m) { e.preventDefault(); strike(m); }
+  });
+</script>

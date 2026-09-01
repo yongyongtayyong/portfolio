@@ -1,0 +1,200 @@
+---
+const cities = [
+  { id: "hsz", name: "Hsinchu",   lat: 24.8138,  lon: 120.9675, anchor: "end" },
+  { id: "bkk", name: "Bangkok",   lat: 13.7563,  lon: 100.5018, anchor: "start" },
+  { id: "sg",  name: "Singapore", lat: 1.3521,   lon: 103.8198, anchor: "start" },
+  { id: "per", name: "Perth",     lat: -31.9523, lon: 115.8613, anchor: "start" },
+];
+
+const raw = [
+  { city: "sg", name: "Dumpling Darlings", where: "Amoy Street", dish: "Pierogi",
+    note: "I have been dreaming of the pierogi since I first had it." },
+  { city: "sg", name: "Hainanese Delicacy", where: "Far East Plaza", dish: "Chicken rice",
+    note: "This will be the first meal when I am back in Singapore." },
+  { city: "sg", name: "Sushi Bar", where: "Ngee Ann City", dish: "Kaisen don",
+    note: "Make all the judgement you want — no wasabi, no ginger." },
+  { city: "sg", name: "Ya Kun Kaya Toast", where: "Islandwide", dish: "Steamed kaya toast",
+    note: "Lowkey, the steamed kaya toast is better." },
+  { city: "bkk", name: "Copper Buffet", where: "Nonthaburi, Bangkok", dish: "Everything",
+    note: "I would fly there just to eat it again." },
+  { city: "hsz", name: "羅記牛肉貓耳麵", roman: "Luo Ji Beef Cat's Ear Noodles", where: "Hsinchu", dish: "Mapo tofu",
+    note: "Comfort food during my Taiwan exchange." },
+  { city: "per", name: "Cafe LA", where: "Perth, Australia", dish: "Mont Blanc",
+    note: "Because of this place, I now drink coffee." },
+];
+
+const cityName = (id) => cities.find((c) => c.id === id).name;
+const places = raw.map((p) => ({
+  ...p,
+  map: "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(p.name + " " + p.where + " " + cityName(p.city)),
+}));
+
+const PAD = 55, S = 8, LON0 = 96, LATT = 28;
+const W = PAD * 2 + 32 * S, H = PAD * 2 + 64 * S;
+const px = (lon) => PAD + (lon - LON0) * S;
+const py = (lat) => PAD + (LATT - lat) * S;
+
+const nodes = cities.map((c) => ({
+  id: c.id, name: c.name, anchor: c.anchor, x: px(c.lon), y: py(c.lat),
+  n: places.filter((p) => p.city === c.id).length,
+}));
+const at = (id) => nodes.find((n) => n.id === id);
+const arc = (a, b) => {
+  const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
+  const dx = b.x - a.x, dy = b.y - a.y;
+  return "M" + a.x + " " + a.y + " Q" + (mx - dy * 0.14) + " " + (my + dx * 0.14) + " " + b.x + " " + b.y;
+};
+const links = [
+  { from: "bkk", to: "sg", d: arc(at("bkk"), at("sg")) },
+  { from: "sg", to: "hsz", d: arc(at("sg"), at("hsz")) },
+  { from: "sg", to: "per", d: arc(at("sg"), at("per")) },
+];
+const lats = [20, 10, 0, -10, -20, -30];
+const lons = [100, 110, 120];
+const latLab = (v) => (v === 0 ? "0°" : Math.abs(v) + (v > 0 ? "°N" : "°S"));
+---
+<div class="map-unit">
+  <div class="map-panel">
+    <svg viewBox={"0 0 " + W + " " + H} role="img" aria-label="Map of recommended places">
+      <g class="grat">
+        {lats.map((v) => <line x1={PAD} y1={py(v)} x2={W - PAD} y2={py(v)} class={v === 0 ? "eq" : ""} />)}
+        {lons.map((v) => <line x1={px(v)} y1={PAD} x2={px(v)} y2={H - PAD} />)}
+      </g>
+      <g class="glab">{lats.map((v) => <text x={PAD - 8} y={py(v) + 3.5}>{latLab(v)}</text>)}</g>
+      <rect x={PAD} y={PAD} width={W - PAD * 2} height={H - PAD * 2} class="frame" />
+      {links.map((l) => <path d={l.d} class="link" data-from={l.from} data-to={l.to} />)}
+      {nodes.map((n) => (
+        <g class="node" data-city={n.id}>
+          <circle cx={n.x} cy={n.y} r="24" fill="transparent" />
+          <circle cx={n.x} cy={n.y} r="16" class="ping" />
+          <circle cx={n.x} cy={n.y} r="6" class="pin" />
+          <circle cx={n.x} cy={n.y} r="2" class="core" />
+          <text x={n.anchor === "end" ? n.x - 16 : n.x + 16} y={n.y - 4} text-anchor={n.anchor} class="n-name">{n.name}</text>
+          <text x={n.anchor === "end" ? n.x - 16 : n.x + 16} y={n.y + 9} text-anchor={n.anchor} class="n-meta">{n.n === 1 ? "1 spot" : n.n + " spots"}</text>
+        </g>
+      ))}
+    </svg>
+    <p class="scale">96–128°E · 36°S–28°N</p>
+  </div>
+
+  <div class="map-list">
+    {places.map((p, i) => (
+      <button class="place" type="button" data-city={p.city} data-dish={p.dish} data-note={p.note} data-map={p.map}>
+        <span class="p-num">{String(i + 1).padStart(2, "0")}</span>
+        <span class="p-body">
+          <span class="p-name">{p.name}</span>
+          {p.roman ? <span class="p-roman">{p.roman}</span> : null}
+          <span class="p-where">{p.where}</span>
+        </span>
+        <span class="p-city">{cityName(p.city)}</span>
+      </button>
+    ))}
+
+    <div class="p-detail">
+      <p class="d-dish" id="fdDish"></p>
+      <p class="d-note" id="fdNote"></p>
+      <a class="d-map" id="fdMap" href="#" target="_blank" rel="noopener" hidden>Open in Google Maps ↗</a>
+    </div>
+  </div>
+</div>
+
+<style>
+  .map-unit { display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr); gap: 3rem; align-items: start; margin-top: 3.5rem; }
+  @media (max-width: 900px) { .map-unit { grid-template-columns: 1fr; } }
+
+  .map-panel { border: 1px solid var(--rule); border-radius: 2px; background: linear-gradient(160deg, #14110d, #0e0c09); padding: 0.5rem 0.5rem 0; overflow: hidden; }
+  .map-panel svg { width: 100%; height: auto; display: block; }
+
+  .grat line { stroke: var(--rule); stroke-width: 1; opacity: 0.55; }
+  .grat line.eq { stroke: #3a332a; opacity: 0.9; stroke-dasharray: 6 4; }
+  .glab text { text-anchor: end; font-family: var(--sans); font-size: 8px; fill: #4a4238; letter-spacing: 0.08em; }
+  .frame { fill: none; stroke: var(--rule); }
+
+  .link { fill: none; stroke: #332c22; stroke-width: 1; stroke-dasharray: 3 7; opacity: 0.8; transition: stroke 0.5s var(--ease), opacity 0.5s var(--ease); }
+  .link.lit { stroke: var(--accent); opacity: 0.6; }
+
+  .node { cursor: pointer; }
+  .pin { fill: #16120e; stroke: #4a4238; stroke-width: 2; transition: stroke 0.5s var(--ease); }
+  .core { fill: #4a4238; transition: fill 0.5s var(--ease); }
+  .ping { fill: none; stroke: var(--accent); stroke-width: 1; opacity: 0; }
+  .n-name { font-family: var(--serif); font-size: 13px; font-weight: 400; fill: var(--muted); transition: fill 0.5s var(--ease); }
+  .n-meta { font-family: var(--sans); font-size: 7.5px; fill: #4a4238; letter-spacing: 0.18em; text-transform: uppercase; }
+  .node:hover .pin, .node.on .pin { stroke: var(--accent); }
+  .node:hover .core, .node.on .core { fill: var(--accent); }
+  .node:hover .n-name, .node.on .n-name { fill: var(--ink); }
+  .node.on .ping { animation: ping 2.4s ease-out infinite; }
+  @keyframes ping { 0% { r: 8; opacity: 0.6; } 70%, 100% { r: 30; opacity: 0; } }
+
+  .scale { font-family: var(--sans); font-size: 0.54rem; letter-spacing: 0.2em; color: #3a332a; text-align: right; margin: 0; padding: 0 0.75rem 0.75rem; }
+
+  .place {
+    box-sizing: border-box; cursor: pointer; background: none; border: none;
+    border-top: 1px solid var(--rule); width: 100%; text-align: left; color: var(--ink);
+    display: grid; grid-template-columns: 2rem 1fr auto; gap: 1.25rem; align-items: center;
+    padding: 1.1rem 0.85rem; position: relative; overflow: hidden;
+    transition: padding-left 0.5s var(--ease), color 0.5s var(--ease);
+  }
+  .place:last-of-type { border-bottom: 1px solid var(--rule); }
+  .place::before {
+    content: ""; position: absolute; inset: 0; z-index: -1; background: var(--accent);
+    transform: scaleX(0); transform-origin: left; transition: transform 0.5s var(--ease);
+  }
+  .place:hover::before, .place.on::before { transform: scaleX(1); }
+  .place:hover, .place.on { color: var(--bg); padding-left: 1.5rem; }
+  .place:hover .p-num, .place.on .p-num, .place:hover .p-city, .place.on .p-city,
+  .place:hover .p-where, .place.on .p-where, .place:hover .p-roman, .place.on .p-roman { color: var(--bg); opacity: 0.72; }
+
+  .p-num, .p-city { font-family: var(--sans); font-size: 0.6rem; color: var(--muted); letter-spacing: 0.2em; text-transform: uppercase; transition: color 0.5s var(--ease); }
+  .p-body { display: flex; flex-direction: column; gap: 0.1rem; }
+  .p-name { font-family: var(--serif), "PingFang TC", "PingFang SC", serif; font-size: 1.3rem; font-weight: 400; line-height: 1.2; }
+  .p-roman { font-size: 0.7rem; font-style: italic; color: var(--muted); transition: color 0.5s var(--ease); }
+  .p-where { font-size: 0.75rem; color: var(--muted); letter-spacing: 0.02em; transition: color 0.5s var(--ease); }
+
+  .p-detail { margin-top: 2.5rem; min-height: 7rem; }
+  .d-dish { font-family: var(--serif); font-size: 1.6rem; font-weight: 300; font-style: italic; color: var(--accent); margin: 0; }
+  .d-note { color: var(--muted); margin-top: 0.6rem; max-width: 30rem; }
+  .d-map { display: inline-block; margin-top: 1.1rem; font-family: var(--sans); font-size: 0.6rem; letter-spacing: 0.22em; text-transform: uppercase; }
+</style>
+
+<script>
+  const placeEls = document.querySelectorAll(".place");
+  const nodeEls = document.querySelectorAll(".node");
+  const linkEls = document.querySelectorAll(".link");
+  const dishEl = document.getElementById("fdDish");
+  const noteEl = document.getElementById("fdNote");
+  const mapEl = document.getElementById("fdMap");
+
+  const clear = () => {
+    placeEls.forEach((p) => p.classList.remove("on"));
+    nodeEls.forEach((n) => n.classList.remove("on"));
+    linkEls.forEach((l) => l.classList.remove("lit"));
+  };
+
+  const select = (el) => {
+    if (el.classList.contains("on")) {
+      clear();
+      if (dishEl) dishEl.textContent = "";
+      if (noteEl) noteEl.textContent = "";
+      if (mapEl) mapEl.hidden = true;
+      return;
+    }
+    clear();
+    el.classList.add("on");
+    const city = el.getAttribute("data-city");
+    nodeEls.forEach((n) => { if (n.getAttribute("data-city") === city) n.classList.add("on"); });
+    linkEls.forEach((l) => {
+      if (l.getAttribute("data-from") === city || l.getAttribute("data-to") === city) l.classList.add("lit");
+    });
+    if (dishEl) dishEl.textContent = el.getAttribute("data-dish") || "";
+    if (noteEl) noteEl.textContent = el.getAttribute("data-note") || "";
+    if (mapEl) { mapEl.href = el.getAttribute("data-map") || "#"; mapEl.hidden = false; }
+  };
+
+  placeEls.forEach((p) => p.addEventListener("click", () => select(p)));
+  nodeEls.forEach((n) => {
+    n.addEventListener("click", () => {
+      const first = document.querySelector('.place[data-city="' + n.getAttribute("data-city") + '"]');
+      if (first) select(first);
+    });
+  });
+</script>

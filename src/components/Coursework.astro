@@ -1,0 +1,132 @@
+---
+const terms = [
+  { id: "y1s1", tab: "Y1S1", label: "Year 1 · Semester 1", mods: [
+    { c: "MA1100", t: "Basic Discrete Mathematics", k: "core" },
+    { c: "MA2001", t: "Linear Algebra", k: "core" },
+    { c: "HSS1000", t: "Understanding Social Complexity", k: "ge" },
+    { c: "HSA1000", t: "Asian Interconnections", k: "ge" },
+    { c: "UTW1001T", t: "How Rich Should Anyone Be?", k: "ge" },
+  ]},
+  { id: "y1s2", tab: "Y1S2", label: "Year 1 · Semester 2", mods: [
+    { c: "CS1010S", t: "Programming Methodology", k: "core" },
+    { c: "DSA1101", t: "Introduction to Data Science", k: "core" },
+    { c: "IT1244", t: "Artificial Intelligence: Technology and Impact", k: "core" },
+    { c: "MA2002", t: "Calculus", k: "core" },
+    { c: "UTC1420", t: "Beyond Borders: Migrant Community & Resilience", k: "ge" },
+    { c: "HSH1000", t: "The Human Condition", k: "ge" },
+  ]},
+  { id: "y2s1", tab: "Y2S1", label: "Year 2 · Semester 1", mods: [
+    { c: "CS2040", t: "Data Structures & Algorithms", k: "core" },
+    { c: "MA2104", t: "Multivariable Calculus", k: "core" },
+    { c: "MA2116", t: "Probability", k: "core" },
+    { c: "DTK1234", t: "Design Thinking", k: "ge" },
+    { c: "HSI1000", t: "How Science Works, Why Science Works", k: "ge" },
+    { c: "UTC2410B", t: "Community, Culture, Conservation: Insights from Nepal", k: "ge" },
+  ]},
+  { id: "y2s2", tab: "Y2S2", label: "Year 2 · Semester 2", mods: [
+    { c: "MA2101", t: "Linear Algebra II", k: "core" },
+    { c: "MA2108", t: "Mathematical Analysis I", k: "core" },
+    { c: "MA2202", t: "Algebra I", k: "core" },
+    { c: "ST2132", t: "Mathematical Statistics", k: "core" },
+    { c: "GEX1015", t: "Life, The Universe and Everything", k: "ge" },
+    { c: "UTS2406", t: "Beyond Seeing: Looking At Art", k: "ge" },
+  ]},
+  { id: "y3s1", tab: "Y3S1", label: "Year 3 · Semester 1", note: "Exchange — National Tsing Hua University, Taiwan", mods: [
+    { c: "MATH301000", t: "Ordinary Differential Equations", k: "core" },
+    { c: "MATH345000", t: "Cryptography", k: "core" },
+    { c: "MATH351000", t: "Introduction to Topology", k: "core" },
+    { c: "MATH503000", t: "Functional Analysis", k: "core" },
+  ]},
+  { id: "y3s2", tab: "Y3S2", label: "Year 3 · Semester 2", mods: [
+    { c: "DSA2102", t: "Essential Data Analytics Tools: Numerical Computation", k: "core" },
+    { c: "DSA3102", t: "Essential Data Analytics Tools: Convex Optimisation", k: "core" },
+    { c: "MA3211", t: "Complex Analysis I", k: "core" },
+    { c: "ST3131", t: "Regression Analysis", k: "core" },
+    { c: "HSI2013", t: "The Science of Music", k: "ge" },
+  ]},
+  { id: "y4", tab: "Y4", label: "Year 4", note: "NUS Overseas College — New York", mods: [
+    { c: "NOC", t: "Year-long startup internship placement", k: "core" },
+  ]},
+];
+---
+<div class="cw">
+  <div class="cw-tabs">
+    {terms.map((t, i) => (
+      <button class={i === 0 ? "cw-tab on" : "cw-tab"} data-target={t.id} type="button">{t.tab}</button>
+    ))}
+  </div>
+
+  {terms.map((t, i) => (
+    <div class={i === 0 ? "cw-panel on" : "cw-panel"} id={t.id}>
+      <p class="cw-label">
+        <span>{t.label}</span>
+        {t.note ? <span class="cw-note">{t.note}</span> : null}
+      </p>
+      {t.mods.map((m) => (
+        <div class={m.k === "ge" ? "mod ge" : "mod core"}>
+          <span class="m-code">{m.c}</span>
+          <span class="m-title">{m.t}</span>
+        </div>
+      ))}
+    </div>
+  ))}
+</div>
+
+<style>
+  .cw { margin-top: 1rem; }
+  .cw-tabs { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 2.5rem; }
+  .cw-tab {
+    cursor: pointer; background: none;
+    font-family: var(--sans); font-size: 0.62rem; font-weight: 400;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    padding: 0.6rem 1.2rem; border: 1px solid var(--rule); border-radius: 999px; color: var(--muted);
+    transition: color 0.4s var(--ease), background 0.4s var(--ease), border-color 0.4s var(--ease);
+  }
+  .cw-tab:hover { color: var(--ink); border-color: var(--accent-dim); }
+  .cw-tab.on { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+
+  .cw-panel { display: none; animation: fadeUp 0.6s var(--ease); }
+  .cw-panel.on { display: block; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+
+  .cw-label {
+    font-family: var(--sans); font-size: 0.6rem; font-weight: 400;
+    letter-spacing: 0.24em; text-transform: uppercase; color: var(--muted);
+    margin: 0 0 1.5rem; display: flex; flex-wrap: wrap; gap: 1rem; align-items: center;
+  }
+  .cw-note { color: var(--accent); border-left: 1px solid var(--rule); padding-left: 1rem; }
+
+  .mod {
+    display: grid; grid-template-columns: 8rem 1fr; gap: 1.5rem; align-items: baseline;
+    padding: 1rem 0.75rem; border-top: 1px solid var(--rule);
+    position: relative; transition: padding-left 0.4s var(--ease);
+  }
+  .mod:last-child { border-bottom: 1px solid var(--rule); }
+  .mod::before {
+    content: ""; position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+    width: 2px; height: 0; background: var(--accent); transition: height 0.4s var(--ease);
+  }
+  .mod:hover::before { height: 60%; }
+  .mod:hover { padding-left: 1.25rem; }
+  @media (max-width: 620px) { .mod { grid-template-columns: 1fr; gap: 0.2rem; } }
+
+  .m-code { font-family: var(--sans); font-size: 0.66rem; letter-spacing: 0.16em; color: var(--accent); }
+  .mod.ge .m-code { color: #4a4238; }
+  .m-title { font-family: var(--serif); font-size: 1.15rem; font-weight: 400; color: var(--ink); }
+  .mod.ge .m-title { color: var(--muted); }
+</style>
+
+<script>
+  const tabs = document.querySelectorAll(".cw-tab");
+  const panels = document.querySelectorAll(".cw-panel");
+  tabs.forEach((tab) => {
+    tab.addEventListener("click", () => {
+      tabs.forEach((t) => t.classList.remove("on"));
+      panels.forEach((p) => p.classList.remove("on"));
+      tab.classList.add("on");
+      const id = tab.getAttribute("data-target");
+      const panel = id ? document.getElementById(id) : null;
+      if (panel) panel.classList.add("on");
+    });
+  });
+</script>

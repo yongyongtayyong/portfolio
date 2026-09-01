@@ -1,0 +1,239 @@
+---
+const route = [
+  { id: "f1", x: 110, y: 575 }, { id: "f2", x: 250, y: 578 },
+  { id: "h1", x: 125, y: 520 }, { id: "h2", x: 238, y: 515 },
+  { id: "r1", x: 95, y: 460 },  { id: "r2", x: 262, y: 452 },
+  { id: "r3", x: 150, y: 410 }, { id: "r4", x: 215, y: 395 },
+  { id: "r5", x: 100, y: 345 }, { id: "r6", x: 255, y: 335 },
+  { id: "r7", x: 140, y: 290 }, { id: "r8", x: 225, y: 275 },
+  { id: "r9", x: 105, y: 225 }, { id: "r10", x: 250, y: 215 },
+  { id: "r11", x: 165, y: 170 }, { id: "r12", x: 215, y: 130 },
+  { id: "top", x: 185, y: 75 },
+];
+const decoys = [
+  { x: 60, y: 400, a: 30 }, { x: 300, y: 360, a: -20 }, { x: 70, y: 250, a: 15 },
+  { x: 305, y: 195, a: 40 }, { x: 75, y: 140, a: -35 }, { x: 300, y: 100, a: 10 },
+  { x: 185, y: 480, a: 0 }, { x: 185, y: 330, a: 25 }, { x: 65, y: 545, a: -12 },
+];
+---
+<div class="climb">
+  <svg viewBox="0 0 420 660" id="cSvg">
+    <defs>
+      <pattern id="tnut" width="34" height="34" patternUnits="userSpaceOnUse">
+        <circle cx="17" cy="17" r="1.2" fill="#241e17" />
+      </pattern>
+      <clipPath id="wc"><rect x="30" y="20" width="310" height="600" rx="4" /></clipPath>
+    </defs>
+
+    <rect x="30" y="20" width="310" height="600" rx="4" class="wall" />
+    <rect x="30" y="20" width="310" height="600" fill="url(#tnut)" clip-path="url(#wc)" />
+    <line x1="185" y1="20" x2="185" y2="620" class="seam" clip-path="url(#wc)" />
+
+    {decoys.map((d) => (
+      <ellipse cx={d.x} cy={d.y} rx="13" ry="8" transform={"rotate(" + d.a + " " + d.x + " " + d.y + ")"} class="decoy" />
+    ))}
+
+    {route.map((h) => (
+      <g class={h.id === "top" ? "hold finish" : "hold"} data-hx={h.x} data-hy={h.y} data-id={h.id}>
+        {h.id === "top" ? <circle cx={h.x} cy={h.y} r="24" class="fin-ring" /> : null}
+        <ellipse cx={h.x} cy={h.y} rx="15" ry="9" />
+      </g>
+    ))}
+
+    <g id="rig">
+      <line id="lLF" class="limb" /><line id="lRF" class="limb" />
+      <line id="lLH" class="limb" /><line id="lRH" class="limb" />
+      <line id="torso" class="torso" />
+      <circle id="head" r="14" class="bodyfill" />
+    </g>
+
+    <g id="limbs">
+      <circle class="grip" id="LF" r="11" /><text class="glab" id="tLF">LF</text>
+      <circle class="grip" id="RF" r="11" /><text class="glab" id="tRF">RF</text>
+      <circle class="grip hand" id="LH" r="12" /><text class="glab" id="tLH">LH</text>
+      <circle class="grip hand" id="RH" r="12" /><text class="glab" id="tRH">RH</text>
+    </g>
+
+    <g class="gauge">
+      <text x="382" y="52" class="gg">V4</text>
+      <rect x="380" y="70" width="5" height="520" rx="2.5" class="gtrack" />
+      <rect x="380" width="5" rx="2.5" class="gfill" id="gFill" />
+      <circle cx="382.5" r="7" class="gdot" id="gDot" />
+      <text x="382" y="614" class="gg">V3</text>
+    </g>
+  </svg>
+
+  <div class="hud">
+    <span>Height <b id="cPct">0%</b></span>
+    <span id="cMsg">Drag his hands and feet to the gold holds</span>
+    <button class="btn" type="button" id="cReset">Back to the ground</button>
+  </div>
+</div>
+
+<style>
+  .climb { margin-top: 3.5rem; }
+  .climb svg { width: 100%; height: auto; display: block; max-width: 470px; margin: 0 auto; touch-action: none; }
+
+  .wall { fill: #14110d; stroke: var(--rule); }
+  .seam { stroke: #1c1812; stroke-width: 1.5; }
+  .decoy { fill: #262019; }
+
+  .hold ellipse { fill: var(--accent); opacity: 0.45; transition: opacity 0.4s; }
+  .hold.near ellipse { opacity: 1; }
+  .hold.used ellipse { opacity: 0.8; }
+  .fin-ring { fill: none; stroke: var(--accent); stroke-width: 1; opacity: 0.35; animation: pulse 2.6s ease-out infinite; }
+  @keyframes pulse { 0% { r: 18; opacity: 0.6; } 70%, 100% { r: 34; opacity: 0; } }
+
+  .limb { stroke: #4a4238; stroke-width: 9; stroke-linecap: round; }
+  .torso { stroke: #3a332a; stroke-width: 24; stroke-linecap: round; }
+  .bodyfill { fill: #3a332a; }
+
+  .grip { fill: var(--accent); stroke: #0c0a08; stroke-width: 2; cursor: grab; }
+  .grip.hand { fill: #f2ede4; }
+  .grip.dragging { cursor: grabbing; stroke: var(--accent); stroke-width: 3; }
+  .glab { text-anchor: middle; font-family: var(--sans); font-size: 7px; fill: #0c0a08; pointer-events: none; letter-spacing: 0.06em; }
+
+  .gtrack { fill: #262019; }
+  .gfill { fill: var(--accent); opacity: 0.85; }
+  .gdot { fill: var(--accent); stroke: #0c0a08; stroke-width: 2.5; }
+  .gg { text-anchor: middle; font-family: var(--serif); font-size: 20px; font-weight: 400; fill: var(--muted); }
+  .climb.sent .gg { fill: var(--accent); }
+</style>
+
+<script>
+  const svg = document.getElementById("cSvg");
+  const wrap = document.querySelector(".climb");
+  const pctEl = document.getElementById("cPct");
+  const msgEl = document.getElementById("cMsg");
+  const resetBtn = document.getElementById("cReset");
+  const gFill = document.getElementById("gFill");
+  const gDot = document.getElementById("gDot");
+
+  const START_Y = 515, TOP_Y = 75, SNAP = 46, REACH = 210;
+  const holdEls = Array.from(document.querySelectorAll(".hold"));
+  const holds = holdEls.map((el) => ({
+    el, x: +el.getAttribute("data-hx"), y: +el.getAttribute("data-hy"), id: el.getAttribute("data-id"),
+  }));
+
+  const HOME = { LH: "h1", RH: "h2", LF: "f1", RF: "f2" };
+  const state = {};
+  let sent = false, dragging = null, ghost = null;
+  const byId = (id) => holds.find((h) => h.id === id);
+  const el = (id) => document.getElementById(id);
+  const pos = (k) => (dragging === k && ghost ? ghost : { x: state[k].x, y: state[k].y });
+
+  const draw = () => {
+    const LH = pos("LH"), RH = pos("RH"), LF = pos("LF"), RF = pos("RF");
+    const hm = { x: (LH.x + RH.x) / 2, y: (LH.y + RH.y) / 2 };
+    const fm = { x: (LF.x + RF.x) / 2, y: (LF.y + RF.y) / 2 };
+    const sh = { x: hm.x + 0.3 * (fm.x - hm.x), y: hm.y + 0.3 * (fm.y - hm.y) };
+    const hp = { x: fm.x + 0.3 * (hm.x - fm.x), y: fm.y + 0.3 * (hm.y - fm.y) };
+
+    const seg = (id, a, b) => {
+      const l = el(id);
+      l.setAttribute("x1", a.x); l.setAttribute("y1", a.y);
+      l.setAttribute("x2", b.x); l.setAttribute("y2", b.y);
+    };
+    seg("lLH", sh, LH); seg("lRH", sh, RH);
+    seg("lLF", hp, LF); seg("lRF", hp, RF);
+    seg("torso", sh, hp);
+
+    const dx = hm.x - sh.x, dy = hm.y - sh.y;
+    const len = Math.hypot(dx, dy) || 1;
+    const head = el("head");
+    head.setAttribute("cx", sh.x + (dx / len) * 25);
+    head.setAttribute("cy", sh.y + (dy / len) * 25);
+
+    ["LH", "RH", "LF", "RF"].forEach((k) => {
+      const p = pos(k);
+      el(k).setAttribute("cx", p.x); el(k).setAttribute("cy", p.y);
+      el("t" + k).setAttribute("x", p.x); el("t" + k).setAttribute("y", p.y + 2.5);
+    });
+
+    holdEls.forEach((h) => h.classList.remove("used"));
+    ["LH", "RH", "LF", "RF"].forEach((k) => state[k].el.classList.add("used"));
+
+    const best = Math.min(state.LH.y, state.RH.y);
+    let pct = Math.round(((START_Y - best) / (START_Y - TOP_Y)) * 100);
+    pct = Math.max(0, Math.min(100, pct));
+    if (sent) pct = 100;
+    if (pctEl) pctEl.textContent = pct + "%";
+    const h = (pct / 100) * 520;
+    gFill.setAttribute("y", 70 + (520 - h));
+    gFill.setAttribute("height", h);
+    gDot.setAttribute("cy", 70 + (520 - h));
+  };
+
+  const reset = () => {
+    sent = false;
+    Object.keys(HOME).forEach((k) => { state[k] = byId(HOME[k]); });
+    holdEls.forEach((h) => h.classList.remove("used", "near"));
+    if (wrap) wrap.classList.remove("sent");
+    if (msgEl) msgEl.textContent = "Drag his hands and feet to the gold holds";
+    draw();
+  };
+
+  const toSvg = (e) => {
+    const m = svg.getScreenCTM();
+    if (!m) return { x: 0, y: 0 };
+    const p = new DOMPoint(e.clientX, e.clientY).matrixTransform(m.inverse());
+    return { x: p.x, y: p.y };
+  };
+
+  ["LH", "RH", "LF", "RF"].forEach((k) => {
+    const c = el(k);
+    c.addEventListener("pointerdown", (e) => {
+      if (sent) return;
+      e.preventDefault();
+      dragging = k; ghost = toSvg(e);
+      c.classList.add("dragging");
+      c.setPointerCapture(e.pointerId);
+      draw();
+    });
+    c.addEventListener("pointermove", (e) => {
+      if (dragging !== k) return;
+      ghost = toSvg(e);
+      const o = ["LH", "RH", "LF", "RF"].filter((x) => x !== k);
+      const cx = o.reduce((s, x) => s + state[x].x, 0) / 3;
+      const cy = o.reduce((s, x) => s + state[x].y, 0) / 3;
+      holds.forEach((h) => {
+        h.el.classList.toggle("near",
+          Math.hypot(h.x - ghost.x, h.y - ghost.y) < SNAP && Math.hypot(h.x - cx, h.y - cy) < REACH);
+      });
+      draw();
+    });
+    const drop = () => {
+      if (dragging !== k) return;
+      c.classList.remove("dragging");
+      const o = ["LH", "RH", "LF", "RF"].filter((x) => x !== k);
+      const cx = o.reduce((s, x) => s + state[x].x, 0) / 3;
+      const cy = o.reduce((s, x) => s + state[x].y, 0) / 3;
+      let target = null, bestD = SNAP;
+      holds.forEach((h) => {
+        if (o.some((x) => state[x] === h)) return;
+        const d = Math.hypot(h.x - ghost.x, h.y - ghost.y);
+        if (d < bestD && Math.hypot(h.x - cx, h.y - cy) < REACH) { bestD = d; target = h; }
+      });
+      if (target) {
+        state[k] = target;
+        if (target.id === "top" && (k === "LH" || k === "RH")) {
+          sent = true;
+          if (wrap) wrap.classList.add("sent");
+          if (msgEl) msgEl.textContent = "Topped out. That's a V4.";
+        } else if (msgEl && !sent) {
+          msgEl.textContent = "Keep three points on at all times.";
+        }
+      } else if (msgEl && !sent) {
+        msgEl.textContent = "Too far, or off route. Move something else first.";
+      }
+      dragging = null; ghost = null;
+      holdEls.forEach((h) => h.classList.remove("near"));
+      draw();
+    };
+    c.addEventListener("pointerup", drop);
+    c.addEventListener("pointercancel", drop);
+  });
+
+  if (resetBtn) resetBtn.addEventListener("click", reset);
+  reset();
+</script>

@@ -1,0 +1,132 @@
+---
+const { kind = "bot", index = 1, img = "", alt = "" } = Astro.props;
+---
+<div class="cover">
+  {img ? (
+    <img src={img} alt={alt} class="photo" />
+  ) : (
+    <svg viewBox="0 0 400 300" fill="none" aria-hidden="true">
+      {kind === "bot" ? (
+        <g>
+          <rect x="40" y="45" width="320" height="210" rx="4" class="win" />
+          <line x1="40" y1="80" x2="360" y2="80" class="hair" />
+          <circle cx="60" cy="62" r="3.5" class="dot" />
+          <circle cx="76" cy="62" r="3.5" class="dot" />
+          <circle cx="92" cy="62" r="3.5" class="dot" />
+          <rect x="62" y="100" width="150" height="34" rx="17" class="bub" />
+          <rect x="80" y="113" width="86" height="6" rx="3" class="txt" />
+          <rect x="180" y="148" width="158" height="48" rx="18" class="bub-a" />
+          <rect x="198" y="162" width="112" height="6" rx="3" class="txt-d" />
+          <rect x="198" y="177" width="66" height="6" rx="3" class="txt-d" />
+          <rect x="62" y="212" width="62" height="27" rx="13.5" class="bub" />
+          <circle cx="79" cy="225" r="3.5" class="pip" style="--i:0" />
+          <circle cx="93" cy="225" r="3.5" class="pip" style="--i:1" />
+          <circle cx="107" cy="225" r="3.5" class="pip" style="--i:2" />
+        </g>
+      ) : null}
+
+      {kind === "pulse" ? (
+        <g>
+          <g class="rig">
+            <circle cx="200" cy="68" r="17" />
+            <path d="M170 106 H230 M200 106 V168 M170 106 L150 146 L158 182 M230 106 L250 146 L242 182 M178 168 L170 218 L180 252 M222 168 L230 218 L220 252 M178 168 H222" />
+          </g>
+          <g class="joints">
+            <circle cx="170" cy="106" r="4" /><circle cx="230" cy="106" r="4" />
+            <circle cx="150" cy="146" r="4" /><circle cx="250" cy="146" r="4" />
+            <circle cx="178" cy="168" r="4" /><circle cx="222" cy="168" r="4" />
+            <circle cx="170" cy="218" r="4" /><circle cx="230" cy="218" r="4" />
+          </g>
+          <path class="wave" d="M20 278 H110 l10 -34 l13 58 l11 -24 h34 l9 -16 l10 16 H380" />
+        </g>
+      ) : null}
+
+      {kind === "trading" ? (
+        <g>
+          <rect x="26" y="118" width="348" height="84" class="band" />
+          <line x1="26" y1="118" x2="374" y2="118" class="edge" />
+          <line x1="26" y1="202" x2="374" y2="202" class="edge" />
+          <path class="curve a" d="M26 216 C 76 188, 108 206, 148 156 S 226 126, 268 146 S 336 96, 374 110" />
+          <path class="curve b" d="M26 232 C 78 218, 112 178, 152 190 S 234 168, 276 124 S 342 134, 374 88" />
+          <circle cx="150" cy="172" r="6" class="mark" />
+          <circle cx="272" cy="134" r="6" class="mark exit" />
+        </g>
+      ) : null}
+
+      {kind === "sentiment" ? (
+        <g>
+          <g class="words">
+            <rect x="48" y="66" width="104" height="14" rx="7" style="--i:0" />
+            <rect x="164" y="66" width="66" height="14" rx="7" class="hi" style="--i:1" />
+            <rect x="242" y="66" width="88" height="14" rx="7" style="--i:2" />
+            <rect x="48" y="98" width="70" height="14" rx="7" style="--i:3" />
+            <rect x="130" y="98" width="128" height="14" rx="7" class="hi" style="--i:4" />
+            <rect x="270" y="98" width="52" height="14" rx="7" style="--i:5" />
+            <rect x="48" y="130" width="120" height="14" rx="7" style="--i:6" />
+            <rect x="180" y="130" width="60" height="14" rx="7" style="--i:7" />
+            <rect x="252" y="130" width="82" height="14" rx="7" class="hi" style="--i:8" />
+          </g>
+          <g class="bars">
+            <rect x="60" y="248" width="46" height="12" rx="2" />
+            <rect x="60" y="222" width="118" height="12" rx="2" class="hi" />
+            <rect x="60" y="196" width="80" height="12" rx="2" />
+          </g>
+          <line x1="52" y1="186" x2="52" y2="272" class="axis" />
+        </g>
+      ) : null}
+    </svg>
+  )}
+  <span class="idx">{String(index).padStart(2, "0")}</span>
+</div>
+
+<style>
+  .cover {
+    position: relative; aspect-ratio: 4 / 3; border-radius: 2px;
+    margin-bottom: 1.4rem; overflow: hidden;
+    background: #0e0c09; border: 1px solid var(--rule);
+  }
+  .cover svg, .photo { width: 100%; height: 100%; display: block; }
+  .photo { object-fit: cover; filter: grayscale(1) sepia(0.15) contrast(1.05); transition: filter 0.7s var(--ease); }
+  :global(.card):hover .photo { filter: none; }
+  .cover svg { transition: transform 0.8s var(--ease); }
+  :global(.card):hover .cover svg { transform: scale(1.04); }
+  .idx {
+    position: absolute; bottom: 0.7rem; right: 0.95rem;
+    font-family: var(--sans); font-size: 0.6rem; letter-spacing: 0.2em;
+    color: var(--muted); opacity: 0.7;
+  }
+
+  .win { fill: #16120e; stroke: var(--rule); }
+  .hair { stroke: var(--rule); }
+  .dot { fill: var(--rule); }
+  .bub { fill: #221c15; }
+  .bub-a { fill: var(--accent); }
+  .txt { fill: #4a4238; }
+  .txt-d { fill: #0c0a08; opacity: 0.5; }
+  .pip { fill: var(--muted); animation: blip 1.4s infinite; animation-delay: calc(var(--i) * 0.18s); }
+  @keyframes blip { 0%, 60%, 100% { opacity: 0.3; } 30% { opacity: 1; } }
+
+  .rig { stroke: #3a332a; stroke-width: 2; fill: none; stroke-linecap: round; }
+  .joints circle { fill: var(--accent); }
+  .wave {
+    stroke: var(--accent); stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round;
+    stroke-dasharray: 620; stroke-dashoffset: 620; animation: draw 3.4s var(--ease) infinite;
+  }
+  @keyframes draw { 0% { stroke-dashoffset: 620; } 55%, 100% { stroke-dashoffset: -620; } }
+
+  .band { fill: var(--accent); opacity: 0.05; }
+  .edge { stroke: var(--accent); opacity: 0.25; stroke-dasharray: 4 6; }
+  .curve { fill: none; stroke-width: 2; stroke-linecap: round; stroke-dasharray: 700; animation: trace 2.6s var(--ease) forwards; }
+  .curve.a { stroke: #4a4238; }
+  .curve.b { stroke: var(--accent); animation-delay: 0.25s; }
+  @keyframes trace { from { stroke-dashoffset: 700; } to { stroke-dashoffset: 0; } }
+  .mark { fill: #0e0c09; stroke: var(--accent); stroke-width: 2; }
+  .mark.exit { stroke: #5a5145; }
+
+  .words rect { fill: #262019; animation: fade 4.2s ease-in-out infinite; animation-delay: calc(var(--i) * 0.22s); }
+  .words rect.hi { fill: var(--accent); opacity: 0.8; }
+  @keyframes fade { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
+  .bars rect { fill: #332c22; }
+  .bars rect.hi { fill: var(--accent); }
+  .axis { stroke: var(--rule); stroke-width: 2; }
+</style>

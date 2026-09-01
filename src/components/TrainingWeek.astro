@@ -1,0 +1,131 @@
+---
+const week = [
+  { d: "Mon", t: "Upper", k: "upper" },
+  { d: "Tue", t: "Lower", k: "lower" },
+  { d: "Wed", t: "Run",   k: "run"   },
+  { d: "Thu", t: "Upper", k: "upper" },
+  { d: "Fri", t: "Lower", k: "lower" },
+  { d: "Sat", t: "Run",   k: "run"   },
+  { d: "Sun", t: "Rest",  k: "rest"  },
+];
+---
+<div class="week">
+  {week.map((day) => (
+    <button class={"day k-" + day.k} type="button" disabled={day.k === "rest"}>
+      <span class="d-lab">{day.d}</span>
+      <svg viewBox="0 0 100 100" aria-hidden="true">
+        {day.k === "upper" ? (
+          <g class="a-upper">
+            <line x1="26" y1="50" x2="74" y2="50" class="bar" />
+            <rect x="17" y="35" width="10" height="30" rx="2" class="plate" />
+            <rect x="73" y="35" width="10" height="30" rx="2" class="plate" />
+          </g>
+        ) : null}
+        {day.k === "lower" ? (
+          <g>
+            <line x1="12" y1="68" x2="88" y2="68" class="depth" />
+            <g class="a-lower">
+              <line x1="30" y1="40" x2="70" y2="40" class="bar" />
+              <rect x="19" y="22" width="12" height="36" rx="2" class="plate" />
+              <rect x="69" y="22" width="12" height="36" rx="2" class="plate" />
+            </g>
+          </g>
+        ) : null}
+        {day.k === "run" ? (
+          <g>
+            <line x1="12" y1="82" x2="88" y2="82" class="ground" />
+            <g class="streaks">
+              <line x1="14" y1="44" x2="32" y2="44" style="--i:0" />
+              <line x1="10" y1="58" x2="26" y2="58" style="--i:1" />
+              <line x1="16" y1="72" x2="30" y2="72" style="--i:2" />
+            </g>
+            <circle cx="56" cy="70" r="8" class="a-run" />
+          </g>
+        ) : null}
+        {day.k === "rest" ? (
+          <g>
+            <circle cx="50" cy="50" r="18" class="rest-ring" style="--i:0" />
+            <circle cx="50" cy="50" r="18" class="rest-ring" style="--i:1" />
+            <circle cx="50" cy="50" r="9" class="rest-core" />
+          </g>
+        ) : null}
+      </svg>
+      <span class="d-type">{day.t}</span>
+      <span class="tick">✓</span>
+    </button>
+  ))}
+</div>
+
+<style>
+  .week { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 0.75rem; margin-top: 3.5rem; }
+  @media (max-width: 780px) { .week { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.6rem; } }
+  @media (max-width: 420px) { .week { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+  .day {
+    position: relative; cursor: pointer; box-sizing: border-box;
+    border: 1px solid var(--rule); border-radius: 2px; background: var(--panel);
+    padding: 1rem 0.5rem; text-align: center; color: var(--ink);
+    transition: border-color 0.5s var(--ease), transform 0.5s var(--ease), background 0.5s var(--ease);
+  }
+  .day:hover:not(:disabled) { border-color: var(--accent-dim); transform: translateY(-5px); }
+  .day:disabled { cursor: default; background: #0e0c09; opacity: 0.5; }
+  .day.done { border-color: var(--accent); background: #171208; }
+  .day.done svg { opacity: 0.25; }
+  .k-rest.unlocked { opacity: 1; border-color: var(--accent); background: #171208; }
+
+  .tick {
+    position: absolute; top: 0.5rem; right: 0.65rem; color: var(--accent); font-size: 0.8rem;
+    opacity: 0; transform: scale(0.4); transition: opacity 0.4s var(--ease), transform 0.4s var(--ease);
+  }
+  .day.done .tick, .k-rest.unlocked .tick { opacity: 1; transform: scale(1); }
+
+  .d-lab { display: block; font-family: var(--sans); font-size: 0.55rem; letter-spacing: 0.24em; text-transform: uppercase; color: #4a4238; }
+  .d-type { display: block; margin-top: 0.5rem; font-family: var(--serif); font-size: 1.1rem; font-weight: 400; }
+  .k-rest .d-type { color: var(--muted); }
+  .day svg { width: 100%; height: auto; display: block; margin: 0.5rem 0; transition: opacity 0.5s; }
+
+  .bar { stroke: #6b6154; stroke-width: 4; stroke-linecap: round; }
+  .plate { fill: var(--accent); }
+  .depth { stroke: #332c22; stroke-width: 1.5; stroke-dasharray: 3 5; }
+  .ground { stroke: #332c22; stroke-width: 1.5; }
+
+  .a-upper { transform-box: view-box; transform-origin: 50px 50px; animation: pressUp 2.4s var(--ease) infinite; }
+  @keyframes pressUp { 0%, 100% { transform: translateY(9px); } 45%, 60% { transform: translateY(-11px); } }
+  .a-lower { transform-box: view-box; transform-origin: 50px 40px; animation: squat 2.8s var(--ease) infinite; }
+  @keyframes squat { 0%, 100% { transform: translateY(0); } 45%, 58% { transform: translateY(28px); } }
+  .a-run { fill: var(--accent); transform-box: view-box; transform-origin: 56px 70px; animation: bounce 0.75s var(--ease) infinite; }
+  @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-24px); } }
+  .streaks line {
+    stroke: #4a4238; stroke-width: 2.5; stroke-linecap: round;
+    transform-box: view-box; transform-origin: center;
+    animation: whoosh 0.75s linear infinite; animation-delay: calc(var(--i) * 0.12s);
+  }
+  @keyframes whoosh {
+    0% { opacity: 0; transform: translateX(-8px); }
+    40% { opacity: 1; }
+    100% { opacity: 0; transform: translateX(22px); }
+  }
+  .rest-core { fill: #332c22; transform-box: view-box; transform-origin: 50px 50px; animation: breathe 4.5s ease-in-out infinite; }
+  .k-rest.unlocked .rest-core { fill: var(--accent); }
+  @keyframes breathe { 0%, 100% { transform: scale(0.85); } 50% { transform: scale(1.1); } }
+  .rest-ring {
+    fill: none; stroke: #332c22; stroke-width: 1; opacity: 0;
+    transform-box: view-box; transform-origin: 50px 50px;
+    animation: halo2 4.5s ease-out infinite; animation-delay: calc(var(--i) * 2.25s);
+  }
+  .k-rest.unlocked .rest-ring { stroke: var(--accent); }
+  @keyframes halo2 { 0% { transform: scale(0.5); opacity: 0.5; } 70%, 100% { transform: scale(1.5); opacity: 0; } }
+</style>
+
+<script>
+  const days = document.querySelectorAll(".day");
+  const rest = document.querySelector(".k-rest");
+  days.forEach((d) => {
+    d.addEventListener("click", () => {
+      if (d.hasAttribute("disabled")) return;
+      d.classList.toggle("done");
+      const n = document.querySelectorAll(".day.done").length;
+      if (rest) rest.classList.toggle("unlocked", n === 6);
+    });
+  });
+</script>
