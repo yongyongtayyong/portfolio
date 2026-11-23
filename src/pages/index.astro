@@ -3,26 +3,36 @@ import Layout from '../layouts/Layout.astro';
 import Cover from '../components/Cover.astro';
 import Coursework from '../components/Coursework.astro';
 
-const ticker = ["Python", "SQL", "PySpark", "Databricks", "Machine Learning", "Astro", "Node.js", "Tableau", "R", "Feature Engineering"];
+const meta = [
+  ["Portfolio", "Index — 2026"],
+  ["Maths, Data Science & Analytics", "Philosophy minor — NUS"],
+  ["AI Engineer, Data & Ops", "ONDO, New York"],
+  ["40.71° N, 74.00° W", "New York City"],
+];
+const tags = ["Mathematics", "Data Science", "Machine Learning"];
+const ticker = ["Python", "SQL", "PySpark", "Machine Learning", "Databricks", "Node.js", "Astro", "R", "Tableau", "Feature Engineering"];
 
 const roles = [
-  { org: "ONDO", title: "AI Engineer, Data and Operations Intern", date: "2026 —",
-    note: "Sustainable DTC sock brand in New York. Building the internal tooling layer: automated waitlist milestone tracking, retention marketing dashboards and a competitor intelligence tool amongst others." },
-  { org: "DSO National Laboratories", title: "Research Intern", date: "2026",
+  { org: "ONDO", title: "AI Engineer, Data and Operations Intern", date: "2026 —", tag: "New York",
+    note: "Sustainable sock brand in New York. I build most of the in-house tech: bots that automate day-to-day operations, AI customer-experience agents, SEO and web development for the store, and the data analysis behind marketing and ops decisions." },
+  { org: "DSO National Laboratories", title: "Research Intern", date: "2026", tag: "Singapore",
     note: "Mathematical research into the security assumptions behind next-generation cryptographic standards. Combined pure mathematics and experimental work to rigorously prove cryptographic standards." },
-  { org: "Shopee", title: "Business Analyst Intern", date: "2025",
+  { org: "Shopee", title: "Business Analyst Intern", date: "2025", tag: "Singapore",
     note: "SQL dashboards tracking first-mile delivery KPIs across five Southeast Asian markets, surfacing the operational gaps that cut average delivery time." },
-  { org: "Singtel", title: "AI / Data Science Intern", date: "2025",
+  { org: "Singtel", title: "AI / Data Science Intern", date: "2025", tag: "Singapore",
     note: "Analysed 10M+ row customer datasets in PySpark and Databricks to isolate churn risk segments, feeding a retention campaign aimed at 50,000+ subscribers. Built and validated a predictive model end to end." },
 ];
 
 const projects = [
-  { name: "Personal Telegram Bot", kind: "bot", img: "", href: "",
-    blurb: "A personal assistant living in Telegram. Modular architecture with feature autoloading, a flow state machine, and a deterministic test harness.",
-    stack: "Node.js · Telegram API · Railway" },
+  { name: "KAYA", kind: "bot", img: "", href: "",
+    blurb: "My personal assistant, living in Telegram. KAYA briefs me every morning and night from my calendar, weather and commute, keeps my to-dos, lists and reminders, and runs small agents on the side: a weekend planner built from the NYC reels I save, a travel agent and a money tracker. Modular, tested, always on.",
+    stack: "Node.js · Telegram API · Google APIs · Railway" },
+  { name: "SEO App for Founders", kind: "seo", img: "", href: "",
+    blurb: "An MVP that helps founders without a marketing team get found: it audits a site and turns the findings into a short, prioritised list of fixes.",
+    stack: "MVP · Web app · SEO" },
   { name: "Pulse", kind: "pulse", img: "", href: "",
-    blurb: "Co-founded a fitness tech startup building wearable biomechanics tracking. Led a four-person team from ideation to a shipped MVP.",
-    stack: "Product · Computer Vision · Mobile" },
+    blurb: "A fitness app from a startup I co-founded. Led a four-person team from the first idea to a shipped MVP.",
+    stack: "Product · App · Startup" },
   { name: "Pairs Trading Backtest", kind: "trading", img: "", href: "",
     blurb: "Mean-reversion strategy on the MA–V pair via Engle–Granger, with dynamic z-score entry and exit. Walk-forward tested on 2016–2025 out-of-sample data.",
     stack: "Python · statsmodels · pandas" },
@@ -30,64 +40,189 @@ const projects = [
     blurb: "TF-IDF pipeline over review text. Compared vectorisation and model choices across themes; pushed accuracy past 80%.",
     stack: "Python · scikit-learn · NLTK" },
 ];
+
+const email = "hello@tayyong.com";
+const [user, domain] = email.split("@");
 ---
 
-<Layout title="Tay Yong">
-  <section class="wrap" style="margin-top:0;padding-top:32vh">
-    <p class="label reveal">Pure Mathematics, Data &amp; Machine Learning — New York</p>
-    <h1 class="display reveal" style="--d:80ms">Tay <em>Yong</em></h1>
-    <p class="lede reveal" style="--d:260ms;margin-top:2.5rem">
-      Mathematics and Data Science &amp; Analytics Double Major and a minor in Philosophy in the
-      National University of Singapore (NUS)
-    </p>
+<Layout title="Tay Yong — Mathematics, Data & Machine Learning">
+  <!-- ── hero ─────────────────────────────────────────── -->
+  <section class="hero wrap" id="top">
+    <div class="meta mono">
+      {meta.map(([a, b], i) => (
+        <p class="reveal" data-now style={"--d:" + (120 + i * 70) + "ms"}><span data-decode data-now>{a}</span><br /><span class="muted">{b}</span></p>
+      ))}
+      <p class="reveal" data-now style="--d:400ms"><span>Local time</span><br /><span class="muted" data-clock="">00:00:00</span></p>
+    </div>
+
+    <div class="name-box">
+      <h1 class="display name" data-fit="0.998" data-split="chars" data-now aria-label="Tay Yong"><span>Tay</span><span>Yong</span></h1>
+    </div>
+
+    <div class="tags mono">
+      {tags.map((t, i) => <span class="bracket reveal" data-now style={"--d:" + (700 + i * 90) + "ms"}>{t}</span>)}
+    </div>
+
+    <figure class="portrait shutter" data-now data-lens data-dolly data-cursor="Colour" style="--d:350ms">
+      <img class="lens-bw" src="/img/tay-bw-1800.jpg" srcset="/img/tay-bw-960.jpg 960w, /img/tay-bw-1800.jpg 1800w" sizes="100vw" alt="Tay Yong smiling in sunglasses at sunset on a mountain lookout, camera around his neck" width="1800" height="935" fetchpriority="high" />
+      <img class="lens-color" src="/img/tay-color-1800.jpg" srcset="/img/tay-color-960.jpg 960w, /img/tay-color-1800.jpg 1800w" sizes="100vw" alt="" aria-hidden="true" width="1800" height="935" loading="lazy" />
+    </figure>
+
+    <div class="intro grid12">
+      <p class="mono muted intro-l reveal">( About )</p>
+      <p class="lede intro-r" data-split>
+        Welcome to my website! I'm a fourth-year Mathematics and Data Science &amp; Analytics double major with a minor in Philosophy at NUS,
+        currently sidequesting in New York City and living my best life. I love maths, music, fitness, food and reading. You'll find all about me here.
+      </p>
+    </div>
   </section>
 
-  <div class="marquee">
-    <div class="marquee-track">{[...ticker, ...ticker].map((t) => <span>{t}</span>)}</div>
+  <div class="vmarquee small" data-mspeed="0.35" style="margin-top:clamp(2.5rem,5vw,4rem)" aria-label="Tools I use">
+    <div class="track">{ticker.map((t) => <span class="item">{t}</span>)}</div>
   </div>
 
-  <section class="wrap">
-    <p class="label reveal">01 — Experience</p>
-    {roles.map((r, i) => (
-      <div class="row reveal" style={"--d:" + i * 90 + "ms"}>
-        <span class="row-num">0{i + 1}</span>
-        <div>
-          <div class="row-org">{r.org}</div>
-          <div class="row-role">{r.title}</div>
-          <div class="row-note"><div><p>{r.note}</p></div></div>
-        </div>
-        <span class="row-date">{r.date}</span>
-      </div>
-    ))}
+  <!-- ── experience ───────────────────────────────────── -->
+  <section class="sec wrap" id="work">
+    <div class="sec-head">
+      <p class="mono">(01) Experience</p>
+      <h2 class="h-l" data-split>Where I've <span class="ital">worked</span></h2>
+    </div>
+    <ol class="xp">
+      {roles.map((r, i) => (
+        <li class="xp-row reveal" style={"--d:" + i * 80 + "ms"} tabindex="0">
+          <span class="mono xp-n">0{i + 1}</span>
+          <span class="xp-org">{r.org}</span>
+          <span class="xp-role"><span>{r.title}</span><span class="mono xp-meta">{r.tag} · {r.date}</span></span>
+          <span class="xp-note"><span><span>{r.note}</span></span></span>
+        </li>
+      ))}
+    </ol>
   </section>
 
-  <section class="wrap">
-    <p class="label reveal">02 — Projects</p>
-    <div class="grid">
+  <!-- ── projects ─────────────────────────────────────── -->
+  <section class="sec wrap" id="projects">
+    <div class="sec-head">
+      <p class="mono">(02) Projects</p>
+      <h2 class="h-l" data-split>Things I've <span class="ital">built</span></h2>
+    </div>
+    <div class="cards">
       {projects.map((p, i) => (
-        <article class="card reveal" style={"--d:" + i * 90 + "ms"}>
+        <article class={"card reveal" + (i < 2 ? " big" : "")} style={"--d:" + i * 70 + "ms"}>
           <Cover kind={p.kind} index={i + 1} img={p.img} alt={p.name} />
-          <h3>{p.href ? <a href={p.href} target="_blank" rel="noopener">{p.name} ↗</a> : p.name}</h3>
+          <div class="card-meta mono"><span>0{i + 1}</span><span>{p.stack}</span></div>
+          <h3 class="h-m">{p.href ? <a href={p.href} target="_blank" rel="noopener">{p.name} ↗</a> : p.name}</h3>
           <p>{p.blurb}</p>
-          <div class="stack">{p.stack}</div>
         </article>
       ))}
     </div>
   </section>
 
-  <section class="wrap">
-    <p class="label reveal">03 — Coursework</p>
+  <!-- ── coursework ───────────────────────────────────── -->
+  <section class="sec wrap">
+    <div class="sec-head">
+      <p class="mono">(03) Coursework</p>
+      <h2 class="h-l" data-split>What I <span class="ital">study</span></h2>
+    </div>
     <Coursework />
   </section>
 
-  <section class="wrap">
-    <p class="label reveal">04 — Contact</p>
-    <a class="big-link reveal" href="mailto:you@example.com">Say hello</a>
-    <div class="socials reveal" style="--d:120ms">
-      <a href="https://github.com/yongyongtayyong" target="_blank" rel="noopener">GitHub</a>
-      <a href="https://www.linkedin.com/in/yong-tay/" target="_blank" rel="noopener">LinkedIn</a>
-      <a href="/personal">Personal</a>
-      <a href="/resume.pdf" target="_blank" rel="noopener">CV</a>
+  <!-- ── contact ──────────────────────────────────────── -->
+  <section class="sec wrap contact" id="contact">
+    <div class="sec-head">
+      <p class="mono">(04) Contact</p>
+      <h2 class="h-l" data-split>Say <span class="ital">hello</span></h2>
+    </div>
+    <button class="mail" type="button" data-copy={email} data-copied="Email copied — say hi" data-cursor="Copy" data-split="chars" aria-label={"Copy " + email}>{user}<span class="c at no-split">@</span>{domain}</button>
+    <div class="mail-sub reveal" style="--d:200ms">
+      <a class="pill solid" href={"mailto:" + email}>Write an email ↗</a>
+      <a class="pill" href="/resume.pdf" target="_blank" rel="noopener">CV (PDF) ↗</a>
+      <span class="socials mono">
+        <a class="ulink" href="https://github.com/yongyongtayyong" target="_blank" rel="noopener">GitHub ↗</a>
+        <a class="ulink" href="https://www.linkedin.com/in/yong-tay/" target="_blank" rel="noopener">LinkedIn ↗</a>
+        <a class="ulink" href="/personal" data-wipe="Personal">Personal →</a>
+        <a class="ulink" href="/food" data-wipe="Food">Food →</a>
+      </span>
     </div>
   </section>
 </Layout>
+
+<style>
+  .hero { padding-top: 4.2rem; }
+  .meta { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--pad); padding: 0.9rem 0; border-bottom: 1px solid var(--ink); }
+  .meta p { margin: 0; }
+  @media (max-width: 900px) { .meta { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 0.8rem; } .meta p:nth-child(n + 4) { display: none; } }
+
+  .name-box { padding-top: clamp(0.8rem, 2vw, 1.6rem); overflow: hidden; }
+  .name { display: inline-flex; gap: 0.3em; white-space: nowrap; font-size: 22vw; }
+
+  .tags { display: flex; justify-content: space-between; padding: 0.9rem 0 1.1rem; }
+
+  .portrait { position: relative; margin: 0; aspect-ratio: 1800 / 935; overflow: hidden; background: var(--paper-3); }
+  .portrait img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .lens-color {
+    --mx: 50%; --my: 50%; --r: 0px;
+    -webkit-mask-image: radial-gradient(circle var(--r) at var(--mx) var(--my), #000 62%, transparent 100%);
+    mask-image: radial-gradient(circle var(--r) at var(--mx) var(--my), #000 62%, transparent 100%);
+  }
+  .portrait figcaption {
+    position: absolute; left: 0; right: 0; bottom: 0; display: flex; justify-content: space-between;
+    padding: 0.8rem 1rem; color: #fff; mix-blend-mode: difference; pointer-events: none;
+  }
+  @media (max-width: 760px) { .portrait { aspect-ratio: 4 / 5; } .portrait img { object-position: 50% 40%; } }
+
+  .intro { padding-top: clamp(2rem, 4vw, 3.5rem); align-items: start; }
+  .intro-l { grid-column: span 3; margin: 0.4rem 0 0; }
+  .intro-r { grid-column: 4 / span 8; max-width: none; font-size: clamp(1.5rem, 3vw, 2.6rem); line-height: 1.12; letter-spacing: -0.03em; color: var(--ink); font-weight: 500; }
+  .intro-r b { font-weight: 600; color: var(--accent); }
+  @media (max-width: 760px) { .intro-l, .intro-r { grid-column: 1 / -1; } }
+
+  /* experience: an index that inverts on hover */
+  .xp { list-style: none; margin: 0; padding: 0; }
+  .xp-row {
+    position: relative; isolation: isolate; cursor: default;
+    display: grid; grid-template-columns: 3rem minmax(0, 5fr) minmax(0, 6fr); column-gap: var(--pad); align-items: baseline;
+    padding: 1.1rem 0.6rem; border-bottom: 1px solid var(--rule); transition: color 0.5s var(--ease), padding 0.6s var(--ease);
+  }
+  .xp-row::before { content: ""; position: absolute; inset: 0; z-index: -1; background: var(--ink); clip-path: inset(0 100% 0 0); transition: clip-path 0.7s var(--ease-io); }
+  .xp-row:hover, .xp-row:focus-visible { color: var(--paper); padding-left: 1.4rem; outline: none; }
+  .xp-row:hover::before, .xp-row:focus-visible::before { clip-path: inset(0 0 0 0); }
+  .xp-org { font-family: var(--display); font-weight: 600; font-size: clamp(1.6rem, 3.6vw, 3.2rem); letter-spacing: -0.04em; line-height: 1; }
+  .xp-role { display: flex; flex-direction: column; gap: 0.3rem; font-size: 1.1rem; line-height: 1.25; }
+  .xp-meta { font-size: 0.72rem; text-transform: uppercase; opacity: 0.6; }
+  .xp-n { opacity: 0.6; }
+  .xp-note { grid-column: 2 / -1; display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.7s var(--ease); }
+  .xp-note > span { overflow: hidden; }
+  .xp-note > span > span { display: block; padding-top: 0.9rem; max-width: 50rem; font-size: 1.05rem; opacity: 0; transform: translateY(10px); transition: opacity 0.5s var(--ease) 0.1s, transform 0.7s var(--ease) 0.1s; }
+  .xp-row:hover .xp-note, .xp-row:focus-visible .xp-note { grid-template-rows: 1fr; }
+  .xp-row:hover .xp-note > span > span, .xp-row:focus-visible .xp-note > span > span { opacity: 0.85; transform: none; }
+  @media (max-width: 760px) {
+    .xp-row { grid-template-columns: 2rem 1fr; row-gap: 0.4rem; }
+    .xp-role { grid-column: 2; }
+    .xp-note { grid-template-rows: 1fr; } .xp-note > span > span { opacity: 0.8; transform: none; padding-top: 0.3rem; }
+  }
+
+  /* projects: two big, three small */
+  .cards { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: clamp(1.6rem, 3vw, 2.6rem) var(--pad); }
+  .card { grid-column: span 2; display: flex; flex-direction: column; gap: 0.7rem; }
+  .card.big { grid-column: span 3; }
+  .card-meta { display: flex; justify-content: space-between; gap: 1rem; border-top: 1px solid var(--ink); padding-top: 0.6rem; }
+  .card h3 { margin: 0; }
+  .card h3 a { text-decoration: none; }
+  .card p { margin: 0; color: var(--ink-2); }
+  @media (max-width: 900px) { .card, .card.big { grid-column: span 3; } }
+  @media (max-width: 600px) { .card, .card.big { grid-column: 1 / -1; } }
+
+  /* contact */
+  .mail {
+    display: block; width: 100%; background: none; border: 0; padding: 0; cursor: pointer; text-align: left;
+    font-family: var(--display); font-weight: 600; letter-spacing: -0.055em; line-height: 0.9; white-space: nowrap;
+    font-size: clamp(2.4rem, 10.4vw, 11rem); color: var(--ink);
+  }
+  .mail.split.settled .c { transition: color 0.35s var(--ease), transform 0.6s var(--ease-back); }
+  .mail .at { font-family: var(--italic); font-style: italic; font-weight: 400; color: var(--accent); }
+  .mail:hover .c { color: var(--accent); }
+  .mail:hover .c:nth-child(odd) { transform: translateY(-0.04em) rotate(-2deg); }
+  .mail-sub { display: flex; flex-wrap: wrap; gap: 0.8rem 1rem; align-items: center; margin-top: 2.2rem; }
+  .socials { display: inline-flex; flex-wrap: wrap; gap: 1.6rem; margin-left: auto; }
+  .socials a { text-decoration: none; }
+</style>

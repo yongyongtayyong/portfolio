@@ -1,74 +1,322 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import MondayCounter from '../components/MondayCounter.astro';
-import Instruments from '../components/Instruments.astro';
-import TrainingWeek from '../components/TrainingWeek.astro';
-import Bookshelf from '../components/Bookshelf.astro';
+import MusicCards from '../components/MusicCards.astro';
 import Turntable from '../components/Turntable.astro';
-import Climber from '../components/Climber.astro';
-import FoodMap from '../components/FoodMap.astro';
+import Training from '../components/Training.astro';
+import Bookshelf from '../components/Bookshelf.astro';
+import { buildFood } from '../data/food.js';
 
-const strip = ["Off duty", "New York City", "Singapore", "Off duty", "New York City", "Singapore", "Off duty", "New York City"];
+const food = buildFood();
+const nyc = food.places.filter((p) => p.state === "ny" || p.state === "nj");
+const hoods = new Set(nyc.map((p) => p.area)).size;
+const nines = nyc.filter((p) => p.rating >= 9).length;
+
+const chapters = [
+  { id: "music", n: "01", name: "Music", sub: "Keys, strings and vinyl" },
+  { id: "training", n: "02", name: "Training", sub: "The split and the numbers" },
+  { id: "climbing", n: "03", name: "Climbing", sub: "Bouldering, V3–V4" },
+  { id: "reading", n: "04", name: "Reading", sub: "Five books that stuck" },
+  { id: "eating", n: "05", name: "Eating", sub: `${nyc.length} spots and counting` },
+];
+const routeHolds = [[430,1060],[560,1040],[420,1300],[560,1290],[600,930],[450,1180],[470,880],[590,1120],[610,760],[430,1010],[470,690],[600,930],[580,560],[460,840],[520,470],[580,760],[545,380]];
+const decoys = Array.from({ length: 34 }, (_, i) => {
+  const x = 340 + ((i * 97) % 320), y = 260 + ((i * 173) % 1180), r = 8 + ((i * 37) % 12), a = (i * 53) % 180;
+  return { x, y, r, a };
+});
 ---
 
-<Layout title="Personal — Tay Yong">
-  <section class="wrap" style="margin-top:0;padding-top:30vh">
-    <p class="label reveal">Off the clock</p>
-    <h1 class="display-sm">
-      <span class="reveal" style="--d:80ms;display:block">Off</span>
-      <span class="reveal" style="--d:220ms;display:block"><em>Duty</em></span>
-    </h1>
-    <MondayCounter />
+<Layout title="Personal — Tay Yong" description="Off duty: music, training, climbing, reading and eating.">
+  <section class="p-hero wrap" id="top">
+    <div class="meta mono">
+      <p class="reveal" data-now><span data-decode data-now>Personal</span><br /><span class="muted">Off duty, on purpose</span></p>
+      <p class="reveal" data-now style="--d:80ms"><span>Chapters</span><br /><span class="muted">Five of them</span></p>
+      <p class="reveal" data-now style="--d:160ms"><span>Based in</span><br /><span class="muted">New York City</span></p>
+      <p class="reveal" data-now style="--d:240ms"><span>Local time</span><br /><span class="muted" data-clock="">00:00:00</span></p>
+    </div>
+    <div class="p-grid">
+      <div class="p-left">
+        <div class="fitbox"><h1 class="display p-title" data-fit="1" data-split="chars" data-now aria-label="Off duty"><span>Off</span><span>Duty</span></h1></div>
+        <MondayCounter />
+      </div>
+      <ol class="chap-index">
+        {chapters.map((c, i) => (
+          <li class="reveal" data-now style={"--d:" + (400 + i * 70) + "ms"}>
+            <a href={"#" + c.id} data-no-wipe>
+              <span class="mono">{c.n}</span>
+              <span class="ci-name">{c.name}</span>
+              <span class="mono ci-sub">{c.sub}</span>
+              <span class="ci-arrow" aria-hidden="true">↓</span>
+            </a>
+          </li>
+        ))}
+      </ol>
+    </div>
   </section>
 
-  <div class="wrap"><div class="strip">{strip.map((s) => <span>{s}</span>)}</div></div>
-
-  <section class="wrap">
-    <p class="label reveal">01 — Music</p>
-    <p class="quote reveal">
-      Life is a lot like jazz. It's better when you improvise.
-      George Gershwin
-    </p>
+  <!-- 01 music -->
+  <section class="ch wrap" id="music">
+    <header class="ch-head">
+      <p class="mono">(01)</p>
+      <h2 class="display ch-title" data-split="chars">Music</h2>
+      <p class="ch-cap ital reveal">“Life is a lot like jazz. It's better when you improvise.” <span class="mono">— George Gershwin</span></p>
+    </header>
+    <div class="ch-grid">
+      <figure class="ch-art" data-scene="music"><svg class="sc-art" viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+        <g class="staff">{[200, 222, 244, 266, 288].map((y) => <line x1="0" y1={y} x2="1000" y2={y} pathLength="1000" />)}</g>
+        <g class="notes"></g>
+        <g class="viola" transform="translate(900 80) rotate(-60 100 230)">
+          <ellipse cx="62" cy="402" rx="26" ry="11" class="v-ink" />
+          <path class="v-body" d="M100 120 C140 118 172 140 172 175 C172 205 150 215 142 235 C136 250 140 262 150 272 C170 290 184 315 184 345 C184 395 145 422 100 422 C55 422 16 395 16 345 C16 315 30 290 50 272 C60 262 64 250 58 235 C50 215 28 205 28 175 C28 140 60 118 100 120 Z" />
+          <path class="v-purf" transform="translate(7 19) scale(0.93)" d="M100 120 C140 118 172 140 172 175 C172 205 150 215 142 235 C136 250 140 262 150 272 C170 290 184 315 184 345 C184 395 145 422 100 422 C55 422 16 395 16 345 C16 315 30 290 50 272 C60 262 64 250 58 235 C50 215 28 205 28 175 C28 140 60 118 100 120 Z" />
+          <path class="v-f" d="M70 280 C60 292 80 306 70 320" /><circle cx="70" cy="280" r="3" class="v-ink" /><circle cx="70" cy="320" r="3" class="v-ink" />
+          <path class="v-f" d="M130 280 C140 292 120 306 130 320" /><circle cx="130" cy="280" r="3" class="v-ink" /><circle cx="130" cy="320" r="3" class="v-ink" />
+          <circle cx="70" cy="300" r="10" class="fring" /><circle cx="130" cy="300" r="10" class="fring" />
+          <path class="v-ink" d="M88 34 L112 34 L115 300 L85 300 Z" />
+          <rect x="91" y="-6" width="18" height="44" rx="4" class="v-body" />
+          <circle cx="100" cy="-16" r="13" class="v-body" /><path class="v-f" d="M100 -16 m-6 0 a6 6 0 1 1 6 6" />
+          <line x1="80" y1="6" x2="91" y2="6" class="v-peg" /><line x1="109" y1="12" x2="120" y2="12" class="v-peg" /><line x1="80" y1="22" x2="91" y2="22" class="v-peg" /><line x1="109" y1="28" x2="120" y2="28" class="v-peg" />
+          <path class="v-ink" d="M90 352 L110 352 L106 404 L94 404 Z" />
+          {[95, 98.5, 101.5, 105].map((x) => <path class="vstr" data-x={x} d={"M" + x + " 40 L" + x + " 382"} />)}
+          <path class="v-bridge" d="M76 326 L124 326 L120 336 L80 336 Z" />
+          <g class="vbow">
+            <path class="bow-stick" d="M-190 300 Q100 292 390 300" />
+            <line class="bow-hair" x1="-176" y1="309" x2="384" y2="309" />
+            <rect x="-196" y="294" width="34" height="20" rx="3" class="v-ink" />
+            <path class="v-ink" d="M384 296 L398 300 L384 312 Z" />
+          </g>
+        </g>
+      </svg></figure>
+      <div class="ch-side"><MusicCards /></div>
+    </div>
+    <div class="sub-head"><p class="mono">The vinyl</p></div>
     <Turntable />
-    <h2 class="stack-head reveal" style="margin-top:8rem"><span>What</span><span>I Play</span></h2>
-    <Instruments />
   </section>
 
-  <section class="wrap">
-    <p class="label reveal">02 — Training</p>
-    <h2 class="stack-head reveal"><span>The</span><span>Week</span></h2>
-    <p class="lede reveal" style="--d:80ms">
-      Upper. Lower. Run. Twice through, then a day off — and the rest day
-      only unlocks once the other six are logged.
-    </p>
-    <TrainingWeek />
+  <!-- 02 training -->
+  <section class="ch wrap" id="training">
+    <header class="ch-head">
+      <p class="mono">(02)</p>
+      <h2 class="display ch-title" data-split="chars">Training</h2>
+      <p class="ch-cap reveal">Five days a week, plus climbing and running.</p>
+    </header>
+    <div class="ch-grid">
+      <figure class="ch-art" data-scene="training"><span class="mono sc-rep">Rep 00 / 03</span><svg class="sc-art" viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+        <line x1="40" y1="520" x2="960" y2="520" class="floor" />
+        {Array.from({ length: 24 }, (_, i) => <line x1={60 + i * 38} y1="520" x2={48 + i * 38} y2="540" class="floor-t" />)}
+        <g class="bb-shadow" transform="translate(500 520)"><ellipse rx="300" ry="9" /></g>
+        <g class="bb-hands">
+          <rect x="372" y="-18" width="36" height="36" rx="10" class="v-ink" /><rect x="592" y="-18" width="36" height="36" rx="10" class="v-ink" />
+        </g>
+        <path class="bb-bar" d="M170 450 Q500 450 830 450" />
+        <g class="bb-l">
+          <rect x="176" y="-56" width="16" height="112" rx="4" class="pl-o" />
+          <rect x="194" y="-100" width="30" height="200" rx="5" class="v-ink" />
+          <rect x="226" y="-76" width="18" height="152" rx="4" class="pl-a" />
+          <rect x="246" y="-16" width="10" height="32" rx="2" class="pl-c" />
+        </g>
+        <g class="bb-r">
+          <rect x="808" y="-56" width="16" height="112" rx="4" class="pl-o" />
+          <rect x="776" y="-100" width="30" height="200" rx="5" class="v-ink" />
+          <rect x="756" y="-76" width="18" height="152" rx="4" class="pl-a" />
+          <rect x="744" y="-16" width="10" height="32" rx="2" class="pl-c" />
+        </g>
+        <g class="dust"></g>
+      </svg></figure>
+      <div class="ch-side"><Training /></div>
+    </div>
   </section>
 
-  <section class="wrap narrow">
-    <p class="label reveal">03 — Climbing</p>
-    <p class="quote reveal">
-      Without a rope there is no fear, because to fall is unthinkable.
-    </p>
-    <Climber />
+  <!-- 03 climbing -->
+  <section class="ch wrap" id="climbing">
+    <header class="ch-head">
+      <p class="mono">(03)</p>
+      <h2 class="display ch-title" data-split="chars">Climbing</h2>
+      <p class="ch-cap ital reveal">“Without a rope there is no fear, because to fall is unthinkable.”</p>
+    </header>
+    <div class="ch-grid">
+      <figure class="ch-art tall" data-scene="climbing"><svg class="sc-art" viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+        <g class="wall-g" transform="translate(0 -700)">
+          <path class="wall-panel" d="M300 160 L700 160 L700 1460 L300 1460 Z" />
+          <path class="wall-vol" d="M300 620 L420 560 L520 640 L300 760 Z" /><path class="wall-vol" d="M700 980 L590 1040 L700 1120 Z" />
+          {Array.from({ length: 12 }, (_, r) => Array.from({ length: 6 }, (_, c) => <circle cx={330 + c * 68} cy={200 + r * 106} r="1.6" class="tnut" />))}
+          {decoys.map((d) => <ellipse cx={d.x} cy={d.y} rx={d.r} ry={d.r * 0.62} transform={"rotate(" + d.a + " " + d.x + " " + d.y + ")"} class="w-decoy" />)}
+          {routeHolds.map(([x, y]) => <ellipse cx={x} cy={y} rx="13" ry="9" class="w-route" />)}
+          <ellipse cx="545" cy="380" rx="20" ry="12" class="w-route top" />
+          <path class="cl-LF cl-limb" /><path class="cl-RF cl-limb" />
+          <path class="cl-torso" /><path class="cl-LH cl-limb" /><path class="cl-RH cl-limb" />
+          <circle class="cl-head" r="17" />
+          <g class="done-tag" opacity="0" transform="translate(560 382)"><rect x="0" y="-15" width="112" height="30" rx="15" class="dt-bg" /><text x="56" y="5" class="dt-txt">✓ Finished</text></g>
+          <circle class="cl-gLH cl-grip" r="7" /><circle class="cl-gRH cl-grip" r="7" /><circle class="cl-gLF cl-grip" r="7" /><circle class="cl-gRF cl-grip" r="7" />
+        </g>
+        
+      </svg></figure>
+      <div class="ch-side">
+        <dl class="facts">
+          <div><dt class="mono">Grade</dt><dd>V3–V4</dd></div>
+          <div><dt class="mono">Style</dt><dd>Bouldering</dd></div>
+          <div><dt class="mono">Where</dt><dd>New York City gyms</dd></div>
+        </dl>
+      </div>
+    </div>
   </section>
 
-  <section class="wrap">
-    <p class="label reveal">04 — Reading</p>
-    <h2 class="stack-head reveal"><span>The</span><span>Library</span></h2>
-    <p class="quote reveal">
-      A reader lives a thousand lives before he dies. The man who never reads lives only one.
-      George R. R. Martin
-    </p>
+  <!-- 04 reading -->
+  <section class="ch wrap" id="reading">
+    <header class="ch-head">
+      <p class="mono">(04)</p>
+      <h2 class="display ch-title" data-split="chars">Reading</h2>
+      <p class="ch-cap ital reveal">“A reader lives a thousand lives before he dies.” <span class="mono">— George R. R. Martin</span></p>
+    </header>
     <Bookshelf />
   </section>
 
-  <section class="wrap">
-    <p class="label reveal">05 — Eating</p>
-    <h2 class="stack-head reveal"><span>Living To Eat,</span><span>Not Eating To Live</span></h2>
-    <FoodMap />
-  </section>
-
-  <section class="wrap">
-    <a class="big-link reveal" href="/">← Back to work</a>
+  <!-- 05 eating -->
+  <section class="ch wrap" id="eating">
+    <header class="ch-head">
+      <p class="mono">(05)</p>
+      <h2 class="display ch-title" data-split="chars">Eating</h2>
+      <p class="ch-cap reveal">Every spot I've tried, scored out of ten.</p>
+    </header>
+    <div class="ch-grid">
+      <figure class="ch-art" data-scene="eating"><svg class="sc-art" viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+        <path class="steam" d="M455 300 C435 260 475 230 455 190 C435 150 475 120 455 80" pathLength="260" />
+        <path class="steam" d="M505 296 C485 256 525 226 505 186 C485 146 525 116 505 76" pathLength="260" />
+        <path class="steam" d="M555 300 C535 260 575 230 555 190 C535 150 575 120 555 80" pathLength="260" />
+        <g class="bowl-g" transform="translate(0 260)">
+          <ellipse cx="500" cy="540" rx="200" ry="10" class="b-shadow" />
+          <path class="v-ink" d="M325 330 L675 330 C675 455 592 508 500 508 C408 508 325 455 325 330 Z" />
+          <path class="b-band" d="M340 380 C420 404 580 404 660 380" />
+          <rect x="455" y="504" width="90" height="16" rx="4" class="v-ink" />
+          <ellipse cx="500" cy="330" rx="175" ry="20" class="b-rim" />
+          <ellipse cx="500" cy="332" rx="156" ry="13" class="b-broth" />
+          <path class="b-n" d="M380 332 q20 -8 40 0 t40 0 t40 0 t40 0 t40 0 t40 0" />
+        </g>
+        <path class="noodle" d="M430 338 C440 330 520 320 548 330" />
+        <path class="noodle" d="M458 338 C468 330 540 320 554 330" />
+        <path class="noodle" d="M486 338 C496 330 548 320 560 330" />
+        <g class="sticks">
+          <line x1="546" y1="330" x2="760" y2="-40" class="stick" /><line x1="566" y1="330" x2="806" y2="-20" class="stick" />
+        </g>
+      </svg></figure>
+      <div class="ch-side">
+        <a class="eat" href="/food" data-wipe="Food" data-cursor="Open map">
+          <span class="mono">The food atlas</span>
+          <span class="eat-stats">
+            <span><b data-count={nyc.length}>0</b><span class="mono">spots in NYC &amp; NJ</span></span>
+            <span><b data-count={hoods}>0</b><span class="mono">neighbourhoods</span></span>
+            <span><b data-count={nines}>0</b><span class="mono">rated 9</span></span>
+          </span>
+          <span class="eat-cta"><span class="h-m">Open the map</span><span class="eat-arrow">→</span></span>
+        </a>
+      </div>
+    </div>
   </section>
 </Layout>
+
+<script>
+  import "../scripts/scenes.js";
+</script>
+
+<style>
+  .p-hero { padding-top: 4.2rem; }
+  .meta { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--pad); padding: 0.9rem 0; border-bottom: 1px solid var(--ink); }
+  .meta p { margin: 0; }
+  @media (max-width: 760px) { .meta { grid-template-columns: 1fr 1fr; row-gap: 0.8rem; } }
+  .p-grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--pad); padding-top: clamp(1rem, 3vw, 2rem); align-items: end; }
+  .p-left { grid-column: span 7; }
+  .fitbox { overflow: hidden; padding-top: 0.06em; }
+  .p-title { display: inline-flex; gap: 0.26em; white-space: nowrap; font-size: 12vw; }
+  .chap-index { grid-column: 9 / span 4; list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--ink); }
+  .chap-index a { position: relative; isolation: isolate; display: grid; grid-template-columns: 2.2rem 1fr auto; align-items: baseline; column-gap: 0.6rem; padding: 0.75rem 0.4rem; border-bottom: 1px solid var(--rule); text-decoration: none; transition: color 0.45s var(--ease), padding 0.6s var(--ease); }
+  .chap-index a::before { content: ""; position: absolute; inset: 0; z-index: -1; background: var(--ink); clip-path: inset(100% 0 0 0); transition: clip-path 0.55s var(--ease-io); }
+  .chap-index a:hover { color: var(--paper); padding-left: 1rem; }
+  .chap-index a:hover::before { clip-path: inset(0 0 0 0); }
+  .ci-name { font-family: var(--display); font-weight: 600; font-size: 1.6rem; letter-spacing: -0.035em; line-height: 1; }
+  .ci-sub { grid-column: 2; opacity: 0.65; }
+  .ci-arrow { grid-column: 3; grid-row: 1 / span 2; align-self: center; transition: transform 0.5s var(--ease-back); }
+  .chap-index a:hover .ci-arrow { transform: translateY(4px); }
+  @media (max-width: 900px) { .p-left, .chap-index { grid-column: 1 / -1; } .chap-index { margin-top: 2rem; } }
+
+  /* chapters: normal scrolling, the art loops on its own */
+  .ch { padding-top: clamp(3.5rem, 7vw, 6rem); scroll-margin-top: 1rem; }
+  .ch-head { display: grid; grid-template-columns: 3rem minmax(0, 1fr) minmax(0, 22rem); align-items: end; column-gap: var(--pad); border-bottom: 1px solid var(--ink); padding-bottom: 0.7rem; margin-bottom: clamp(1.2rem, 2.5vw, 2rem); }
+  .ch-head p { margin: 0; }
+  .ch-title { margin: 0 0 -0.06em; font-size: clamp(3.2rem, 9vw, 9rem); line-height: 0.86; letter-spacing: -0.06em; white-space: nowrap; }
+  .ch-cap { font-size: clamp(1rem, 1.4vw, 1.25rem); line-height: 1.25; text-align: right; padding-bottom: 0.4rem; }
+  .ch-cap .mono { display: block; margin-top: 0.4rem; font-style: normal; font-size: 0.68rem; color: var(--muted); }
+  @media (max-width: 760px) { .ch-head { grid-template-columns: 1fr; row-gap: 0.4rem; } .ch-cap { text-align: left; } }
+  .ch-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: var(--pad); align-items: start; }
+  @media (max-width: 900px) { .ch-grid { grid-template-columns: 1fr; } }
+  .ch-art { position: relative; margin: 0; background: var(--paper-2); border: 1px solid var(--ink); aspect-ratio: 5 / 3; overflow: hidden; }
+  .ch-art.tall { aspect-ratio: 5 / 4; }
+  .sc-art { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .sc-rep { position: absolute; z-index: 2; top: 0.7rem; left: 0.8rem; font-size: 0.68rem; text-transform: uppercase; }
+  .sub-head { border-bottom: 1px solid var(--ink); padding: 2.5rem 0 0.5rem; }
+  .sub-head p { margin: 0; text-transform: uppercase; font-size: 0.74rem; }
+  .facts { margin: 0; border-top: 1px solid var(--ink); }
+  .facts div { display: grid; grid-template-columns: 6rem 1fr; align-items: baseline; padding: 0.8rem 0; border-bottom: 1px solid var(--rule); }
+  .facts dt { font-size: 0.72rem; text-transform: uppercase; color: var(--muted); }
+  .facts dd { margin: 0; font-family: var(--display); font-weight: 600; font-size: clamp(1.6rem, 3vw, 2.4rem); letter-spacing: -0.04em; line-height: 1; }
+
+  /* shared ink */
+  .sc-art :global(.v-ink) { fill: var(--ink); }
+  .v-body { fill: var(--paper-2); stroke: var(--ink); stroke-width: 3; }
+  .v-purf { fill: none; stroke: var(--ink); stroke-width: 1; opacity: 0.5; }
+  .v-f { fill: none; stroke: var(--ink); stroke-width: 3; stroke-linecap: round; }
+  .v-peg { stroke: var(--ink); stroke-width: 5; stroke-linecap: round; }
+  .v-bridge { fill: var(--paper); stroke: var(--ink); stroke-width: 2; }
+  .vstr { fill: none; stroke: var(--muted); stroke-width: 1.4; }
+  .bow-stick { fill: none; stroke: var(--ink); stroke-width: 5; stroke-linecap: round; }
+  .bow-hair { stroke: var(--accent); stroke-width: 2.5; }
+  .fring { fill: none; stroke: var(--accent); stroke-width: 1.5; opacity: 0; }
+  .staff line { stroke: var(--ink); stroke-width: 1.2; opacity: 0.35; stroke-dasharray: 1000; stroke-dashoffset: 1000; }
+  .notes :global(.note) { fill: var(--ink); stroke: var(--ink); stroke-width: 3; stroke-linecap: round; }
+  .notes :global(.note path) { fill: none; }
+  .notes :global(.note ellipse) { stroke: none; }
+
+  .floor { stroke: var(--ink); stroke-width: 2; }
+  .floor-t { stroke: var(--ink); stroke-width: 1; opacity: 0.4; }
+  .bb-shadow ellipse { fill: var(--ink); }
+  .bb-bar { fill: none; stroke: var(--ink); stroke-width: 9; stroke-linecap: round; }
+  .pl-o { fill: var(--paper); stroke: var(--ink); stroke-width: 2.5; }
+  .pl-a { fill: var(--accent); }
+  .pl-c { fill: var(--muted); }
+  .bb-arm { stroke: var(--ink); stroke-width: 26; stroke-linecap: round; opacity: 0.9; }
+  .dust :global(circle) { fill: var(--muted); }
+
+  .wall-panel { fill: var(--paper-2); stroke: var(--ink); stroke-width: 2; }
+  .wall-vol { fill: var(--paper-3); stroke: var(--ink); stroke-width: 2; }
+  .tnut { fill: var(--muted); opacity: 0.5; }
+  .w-decoy { fill: var(--paper); stroke: var(--ink); stroke-width: 1.5; }
+  .w-route { fill: var(--accent); stroke: var(--ink); stroke-width: 1.5; }
+  .w-route.top { stroke-width: 2.5; }
+  .cl-limb { fill: none; stroke: var(--ink); stroke-width: 10; stroke-linecap: round; stroke-linejoin: round; }
+  .cl-torso { fill: none; stroke: var(--ink); stroke-width: 30; stroke-linecap: round; }
+  .cl-head { fill: var(--ink); }
+  .cl-grip { fill: var(--paper); stroke: var(--ink); stroke-width: 3; }
+
+  .steam { fill: none; stroke: var(--muted); stroke-width: 3; stroke-linecap: round; stroke-dasharray: 130 130; opacity: 0; }
+  .b-shadow { fill: var(--ink); opacity: 0.15; }
+  .b-band { fill: none; stroke: var(--accent); stroke-width: 6; }
+  .b-rim { fill: var(--paper-3); stroke: var(--ink); stroke-width: 3; }
+  .b-broth { fill: color-mix(in srgb, var(--accent) 55%, var(--paper)); }
+  .b-n { fill: none; stroke: var(--paper); stroke-width: 3; opacity: 0.8; }
+  .noodle { fill: none; stroke: var(--accent); stroke-width: 4.5; stroke-linecap: round; }
+  .stick { stroke: var(--ink); stroke-width: 9; stroke-linecap: round; }
+
+  .dt-bg { fill: var(--ink); }
+  .dt-txt { fill: var(--paper); font-family: var(--mono); font-size: 13px; text-anchor: middle; text-transform: uppercase; }
+  .w-route.top.is-done { fill: var(--ink); }
+
+  .eat { display: grid; gap: 1.6rem; text-decoration: none; padding: clamp(1.2rem, 3vw, 2rem); border: 1px solid var(--ink); position: relative; isolation: isolate; overflow: hidden; transition: color 0.6s var(--ease); }
+  .eat::before { content: ""; position: absolute; inset: 0; z-index: -1; background: var(--ink); clip-path: circle(0% at 100% 100%); transition: clip-path 0.9s var(--ease-io); }
+  .eat:hover { color: var(--paper); }
+  .eat:hover::before { clip-path: circle(150% at 100% 100%); }
+  .eat-stats { display: flex; flex-wrap: wrap; gap: 1.2rem clamp(1.5rem, 4vw, 3.5rem); }
+  .eat-stats > span { display: flex; flex-direction: column; gap: 0.3rem; }
+  .eat-stats b { font-family: var(--display); font-weight: 600; font-size: clamp(3rem, 6vw, 5rem); letter-spacing: -0.05em; line-height: 0.85; font-variant-numeric: tabular-nums; }
+  .eat-cta { display: flex; justify-content: space-between; align-items: end; border-top: 1px solid currentColor; padding-top: 0.9rem; }
+  .eat-arrow { font-size: clamp(2rem, 4vw, 3rem); line-height: 1; transition: transform 0.6s var(--ease-back); }
+  .eat:hover .eat-arrow { transform: translateX(0.4rem) rotate(-45deg); }
+</style>

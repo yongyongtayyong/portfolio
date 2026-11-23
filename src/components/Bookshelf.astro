@@ -38,50 +38,29 @@ const books = [
 </div>
 
 <style>
-  .shelf-unit { margin-top: 3.5rem; }
-  .shelf { display: flex; align-items: flex-end; justify-content: center; gap: 6px; min-height: 320px; padding: 0 0.5rem; perspective: 1400px; }
-  .board { height: 10px; background: linear-gradient(#2e2820, #16120e); box-shadow: 0 16px 38px rgba(0,0,0,0.7); }
-
-  .book {
-    cursor: pointer; box-sizing: border-box; background: none; border: none; padding: 0;
-    position: relative; flex: 0 0 auto; width: 48px; height: var(--h);
-    transition: width 0.65s var(--ease), height 0.65s var(--ease), transform 0.65s var(--ease), margin 0.65s var(--ease);
-  }
-  .book.open { width: 178px; height: 256px; transform: translateY(-54px); margin: 0 12px; z-index: 5; }
-
-  .inner { position: absolute; inset: 0; transform-style: preserve-3d; transition: transform 0.75s var(--ease); }
+  .shelf-unit { margin-top: 3rem; }
+  .shelf { display: flex; align-items: flex-end; justify-content: center; gap: 4px; min-height: 330px; padding: 0 0.5rem; perspective: 1400px; }
+  .board { height: 6px; background: var(--ink); }
+  .book { cursor: pointer; box-sizing: border-box; background: none; border: none; padding: 0; position: relative; flex: 0 0 auto; width: 50px; height: var(--h); transition: width 0.8s var(--ease-io), height 0.8s var(--ease-io), transform 0.8s var(--ease-back), margin 0.8s var(--ease-io); }
+  .book:hover:not(.open) { transform: translateY(-14px) rotate(-2deg); }
+  .book.open { width: 180px; height: 258px; transform: translateY(-48px); margin: 0 14px; z-index: 5; }
+  .inner { position: absolute; inset: 0; transform-style: preserve-3d; transition: transform 0.9s var(--ease-io); }
   .book.open .inner { transform: rotateY(180deg); }
-  .face { position: absolute; inset: 0; backface-visibility: hidden; border-radius: 1px 3px 3px 1px; display: flex; overflow: hidden; }
-
-  .spine {
-    flex-direction: column; justify-content: space-between; align-items: center; padding: 1rem 0;
-    writing-mode: vertical-rl; text-orientation: mixed;
-    background: linear-gradient(90deg, color-mix(in srgb, var(--c) 48%, #100d0a) 0 3px, color-mix(in srgb, var(--c) 20%, #14110d) 3px 100%);
-    border: 1px solid color-mix(in srgb, var(--c) 35%, transparent);
-    box-shadow: inset -6px 0 14px rgba(0,0,0,0.5);
-    transition: background 0.5s var(--ease);
-  }
-  .book:hover .spine { background: color-mix(in srgb, var(--c) 38%, #14110d); }
-  .sp-t { font-family: var(--serif); font-size: 0.85rem; font-weight: 400; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-height: 74%; }
-  .sp-a { font-family: var(--sans); font-size: 0.5rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
-  .book.current .spine { box-shadow: inset -6px 0 14px rgba(0,0,0,0.5), 0 0 0 1px var(--accent); }
-
-  .bcover {
-    transform: rotateY(180deg); flex-direction: column; justify-content: flex-end;
-    padding: 1.3rem; gap: 0.2rem; text-align: left;
-    background: radial-gradient(120% 90% at 15% 8%, color-mix(in srgb, var(--c) 42%, transparent) 0%, transparent 60%), #100d0a;
-    border: 1px solid color-mix(in srgb, var(--c) 45%, transparent);
-  }
-  .cv-rule { position: absolute; top: 1.3rem; left: 1.3rem; width: 30px; height: 1px; background: var(--c); }
-  .cv-t { font-family: var(--serif); font-size: 1.1rem; font-weight: 400; line-height: 1.2; color: var(--ink); }
-  .cv-a { font-size: 0.7rem; color: var(--muted); }
-  .cv-y { font-family: var(--sans); font-size: 0.55rem; letter-spacing: 0.22em; color: var(--c); margin-top: 0.4rem; }
-
-  .detail { margin-top: 3rem; max-width: 36rem; min-height: 7rem; }
-  .dt-t { font-family: var(--serif); font-size: clamp(1.5rem, 3.2vw, 2.2rem); font-weight: 300; line-height: 1.2; margin: 0; }
-  .dt-a { font-family: var(--sans); font-size: 0.6rem; letter-spacing: 0.24em; text-transform: uppercase; color: var(--muted); margin: 0.75rem 0 0; }
-  .dt-n { color: var(--muted); margin-top: 1.25rem; }
-
+  .face { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; display: flex; overflow: hidden; }
+  .spine { flex-direction: column; justify-content: space-between; align-items: center; padding: 1rem 0; writing-mode: vertical-rl; text-orientation: mixed; background: color-mix(in srgb, var(--c) 62%, var(--paper)); border: 1px solid var(--ink); transition: background 0.5s var(--ease); }
+  .book:hover .spine { background: color-mix(in srgb, var(--c) 85%, var(--paper)); }
+  .sp-t { font-family: var(--display); font-weight: 600; font-size: 0.9rem; letter-spacing: -0.02em; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-height: 74%; }
+  .sp-a { font-family: var(--mono); font-size: 0.55rem; text-transform: uppercase; color: var(--ink); opacity: 0.65; }
+  .book.current .spine { box-shadow: inset 0 0 0 3px var(--accent); }
+  .bcover { transform: rotateY(180deg); flex-direction: column; justify-content: flex-end; padding: 1.2rem; gap: 0.25rem; text-align: left; background: var(--c); border: 1px solid var(--ink); color: #121211; }
+  .cv-rule { position: absolute; top: 1.2rem; left: 1.2rem; width: 30px; height: 2px; background: #121211; }
+  .cv-t { font-family: var(--display); font-weight: 600; font-size: 1.25rem; letter-spacing: -0.035em; line-height: 1; color: #121211; }
+  .cv-a { font-size: 0.75rem; color: #121211; opacity: 0.75; }
+  .cv-y { font-family: var(--mono); font-size: 0.62rem; color: #121211; margin-top: 0.4rem; }
+  .detail { margin-top: 3rem; max-width: 40rem; min-height: 7rem; }
+  .dt-t { font-family: var(--display); font-weight: 600; font-size: clamp(1.8rem, 4vw, 3rem); letter-spacing: -0.045em; line-height: 0.95; margin: 0; }
+  .dt-a { font-family: var(--mono); font-size: 0.72rem; text-transform: uppercase; color: var(--muted); margin: 0.8rem 0 0; }
+  .dt-n { color: var(--ink-2); margin-top: 1.1rem; font-size: 1.05rem; line-height: 1.45; }
   @media (max-width: 700px) {
     .shelf { overflow-x: auto; justify-content: flex-start; scrollbar-width: none; }
     .shelf::-webkit-scrollbar { display: none; }

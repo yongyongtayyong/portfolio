@@ -20,7 +20,7 @@ const decoys = [
   <svg viewBox="0 0 420 660" id="cSvg">
     <defs>
       <pattern id="tnut" width="34" height="34" patternUnits="userSpaceOnUse">
-        <circle cx="17" cy="17" r="1.2" fill="#241e17" />
+        <circle cx="17" cy="17" r="1.2" class="tn" />
       </pattern>
       <clipPath id="wc"><rect x="30" y="20" width="310" height="600" rx="4" /></clipPath>
     </defs>
@@ -71,32 +71,29 @@ const decoys = [
 </div>
 
 <style>
-  .climb { margin-top: 3.5rem; }
+  .climb { margin-top: 3rem; }
   .climb svg { width: 100%; height: auto; display: block; max-width: 470px; margin: 0 auto; touch-action: none; }
-
-  .wall { fill: #14110d; stroke: var(--rule); }
-  .seam { stroke: #1c1812; stroke-width: 1.5; }
-  .decoy { fill: #262019; }
-
-  .hold ellipse { fill: var(--accent); opacity: 0.45; transition: opacity 0.4s; }
+  .wall { fill: var(--paper-2); stroke: var(--ink); stroke-width: 1.5; }
+  .seam { stroke: var(--rule); stroke-width: 1.5; }
+  .decoy { fill: var(--paper); stroke: var(--ink); stroke-width: 1; }
+  .tn { fill: var(--muted); }
+  .hold ellipse { fill: var(--accent); stroke: var(--ink); stroke-width: 1.2; opacity: 0.5; transition: opacity 0.4s; }
   .hold.near ellipse { opacity: 1; }
-  .hold.used ellipse { opacity: 0.8; }
-  .fin-ring { fill: none; stroke: var(--accent); stroke-width: 1; opacity: 0.35; animation: pulse 2.6s ease-out infinite; }
+  .hold.used ellipse { opacity: 0.85; }
+  .fin-ring { fill: none; stroke: var(--accent); stroke-width: 1.2; opacity: 0.35; animation: pulse 2.6s ease-out infinite; }
   @keyframes pulse { 0% { r: 18; opacity: 0.6; } 70%, 100% { r: 34; opacity: 0; } }
-
-  .limb { stroke: #4a4238; stroke-width: 9; stroke-linecap: round; }
-  .torso { stroke: #3a332a; stroke-width: 24; stroke-linecap: round; }
-  .bodyfill { fill: #3a332a; }
-
-  .grip { fill: var(--accent); stroke: #0c0a08; stroke-width: 2; cursor: grab; }
-  .grip.hand { fill: #f2ede4; }
+  .limb { stroke: var(--ink); stroke-width: 9; stroke-linecap: round; }
+  .torso { stroke: var(--ink); stroke-width: 24; stroke-linecap: round; }
+  .bodyfill { fill: var(--ink); }
+  .grip { fill: var(--accent); stroke: var(--ink); stroke-width: 2; cursor: grab; transition: r 0.3s var(--ease-back); }
+  .grip:hover { r: 14; }
+  .grip.hand { fill: var(--paper); }
   .grip.dragging { cursor: grabbing; stroke: var(--accent); stroke-width: 3; }
-  .glab { text-anchor: middle; font-family: var(--sans); font-size: 7px; fill: #0c0a08; pointer-events: none; letter-spacing: 0.06em; }
-
-  .gtrack { fill: #262019; }
-  .gfill { fill: var(--accent); opacity: 0.85; }
-  .gdot { fill: var(--accent); stroke: #0c0a08; stroke-width: 2.5; }
-  .gg { text-anchor: middle; font-family: var(--serif); font-size: 20px; font-weight: 400; fill: var(--muted); }
+  .glab { text-anchor: middle; font-family: var(--mono); font-size: 7px; fill: var(--ink); pointer-events: none; }
+  .gtrack { fill: var(--paper-3); }
+  .gfill { fill: var(--accent); }
+  .gdot { fill: var(--accent); stroke: var(--ink); stroke-width: 2.5; }
+  .gg { text-anchor: middle; font-family: var(--display); font-weight: 600; font-size: 22px; letter-spacing: -1px; fill: var(--muted); }
   .climb.sent .gg { fill: var(--accent); }
 </style>
 

@@ -1,0 +1,113 @@
+---
+import { SPLIT, ALSO, LIFTS, UPDATED } from '../data/training.js';
+
+// what's actually on the bar: plates per side for a 20 kg bar, greedy from the big ones
+const PLATES = [25, 20, 15, 10, 5, 2.5, 1.25, 0.5];
+const SIZE = { 25: [100, 16], 20: [100, 14], 15: [86, 12], 10: [72, 10], 5: [52, 8], 2.5: [42, 7], 1.25: [34, 6], 0.5: [26, 5] };
+const perSide = (kg, added) => {
+  let rest = added ? kg : (kg - 20) / 2;
+  const out = [];
+  for (const p of PLATES) while (rest >= p - 1e-9) { out.push(p); rest -= p; }
+  return out;
+};
+const fmt = (n) => (Number.isInteger(n) ? String(n) : n.toFixed(1).replace(/\.0$/, ""));
+const lifts = LIFTS.map((l) => ({ ...l, plates: perSide(l.kg, l.added) }));
+---
+<div class="tr">
+  <div class="tr-split">
+    <p class="mono muted tr-lab">The split</p>
+    <ol>
+      {SPLIT.map((s, i) => <li class="reveal" style={"--d:" + i * 60 + "ms"}><span class="mono">0{i + 1}</span><b>{s}</b></li>)}
+    </ol>
+    <ul class="mono tr-also">
+      {ALSO.map(([a, b]) => <li><span>{a}</span><span class="muted">{b}</span></li>)}
+    </ul>
+  </div>
+
+  <div class="tr-lifts">
+    <p class="mono muted tr-lab">Working sets, {UPDATED}</p>
+    {lifts.map((l, i) => {
+      const side = l.plates;
+      let x = 0;
+      const placed = side.map((p) => { const [h, w] = SIZE[p]; const r = { p, h, w, x }; x += w + 1.5; return r; });
+      return (
+        <article class="lift" style={"--i:" + i}>
+          <header>
+            <h4>{l.name}</h4>
+            <p class="mono muted">{l.sets}</p>
+          </header>
+          <p class="kg"><span data-kg={l.kg}>{l.added ? "+" : ""}{fmt(l.kg)}</span><small class="mono">kg</small></p>
+          <svg class="bar" viewBox="0 0 300 64" aria-label={`${l.added ? "Added" : "Per side"}: ${side.map(fmt).join(" + ")} kg`} role="img">
+            {l.added ? (
+              <g>
+                <path d="M150 4 L150 18" class="chain" />
+                {placed.map((q) => <rect class={"pl p" + String(q.p).replace(".", "_")} x={150 - q.w / 2 + 0} y={18} width={q.w * 2.4} height={q.h * 0.42} rx="2" style={"--o:" + q.x + "px"} transform={`translate(${-q.w * 0.7} 0)`} />)}
+              </g>
+            ) : (
+              <g>
+                <line x1="8" y1="32" x2="292" y2="32" class="shaft" />
+                <rect x="96" y="27" width="6" height="10" class="collar" /><rect x="198" y="27" width="6" height="10" class="collar" />
+                {placed.map((q) => <rect class={"pl r p" + String(q.p).replace(".", "_")} x={204 + q.x} y={32 - (q.h * 0.3)} width={q.w} height={q.h * 0.6} rx="1.5" style={"--o:" + (q.x + 30) + "px"} />)}
+                {placed.map((q) => <rect class={"pl l p" + String(q.p).replace(".", "_")} x={96 - q.x - q.w} y={32 - (q.h * 0.3)} width={q.w} height={q.h * 0.6} rx="1.5" style={"--o:" + -(q.x + 30) + "px"} />)}
+              </g>
+            )}
+          </svg>
+          <p class="mono muted plates">{l.added ? "on the belt" : "per side"}: {side.map(fmt).join(" + ")}</p>
+          {l.goal && (
+            <div class="goal">
+              <span class="g-track"><i style={"--w:" + Math.min(100, (l.kg / l.goal) * 100) + "%"}></i></span>
+              <span class="mono">{fmt(l.goal - l.kg)} kg to {fmt(l.goal)}, by {l.goalBy}</span>
+            </div>
+          )}
+        </article>
+      );
+    })}
+  </div>
+</div>
+
+<style>
+  .tr { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: var(--pad); }
+  @media (max-width: 900px) { .tr { grid-template-columns: 1fr; } }
+  .tr-lab { font-size: 0.72rem; text-transform: uppercase; margin: 0 0 0.7rem; }
+  .tr-split ol { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--ink); }
+  .tr-split li { display: flex; align-items: baseline; gap: 0.9rem; padding: 0.55rem 0; border-bottom: 1px solid var(--rule); }
+  .tr-split b { font-family: var(--display); font-weight: 600; font-size: 1.6rem; letter-spacing: -0.04em; line-height: 1; }
+  .tr-also { list-style: none; margin: 1rem 0 0; padding: 0; font-size: 0.74rem; text-transform: uppercase; display: grid; gap: 0.4rem; }
+  .tr-also li { display: flex; gap: 0.8rem; }
+  .tr-also li span:first-child { min-width: 3.2rem; }
+
+  .tr-lifts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 var(--pad); align-content: start; }
+  .tr-lifts .tr-lab { grid-column: 1 / -1; }
+  @media (max-width: 600px) { .tr-lifts { grid-template-columns: 1fr; } }
+  .lift { border-top: 1px solid var(--ink); padding: 0.7rem 0 1.1rem; }
+  .lift header { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; }
+  .lift h4 { margin: 0; font-size: 1rem; font-weight: 500; }
+  .lift header p { margin: 0; font-size: 0.72rem; }
+  .kg { margin: 0.2rem 0 0; font-family: var(--display); font-weight: 600; font-size: clamp(3rem, 6vw, 4.6rem); letter-spacing: -0.06em; line-height: 0.95; font-variant-numeric: tabular-nums; }
+  .kg small { font-size: 0.8rem; letter-spacing: 0; margin-left: 0.4rem; color: var(--muted); font-weight: 400; }
+  .bar { display: block; width: 100%; height: auto; margin-top: 0.4rem; overflow: visible; }
+  .shaft { stroke: var(--ink); stroke-width: 3; stroke-linecap: round; }
+  .collar { fill: var(--muted); }
+  .chain { stroke: var(--ink); stroke-width: 2; stroke-dasharray: 3 2; fill: none; }
+  .pl { fill: var(--ink); transform-box: fill-box; transition: transform 0.75s var(--ease-back), opacity 0.4s var(--ease); transition-delay: calc(var(--k, 0) * 70ms); }
+  .pl.p25 { fill: var(--accent); }
+  .pl.p2_5, .pl.p1_25, .pl.p0_5 { fill: var(--muted); }
+  .lift:not(.in) .pl.r, .lift:not(.in) .pl.l { transform: translateX(var(--o)); opacity: 0; }
+  .lift:not(.in) .pl:not(.r):not(.l) { transform: translateY(-30px); opacity: 0; }
+  .plates { margin: 0.3rem 0 0; font-size: 0.68rem; text-transform: uppercase; }
+  .goal { display: grid; gap: 0.4rem; margin-top: 0.8rem; font-size: 0.68rem; text-transform: uppercase; }
+  .g-track { height: 4px; background: var(--paper-3); position: relative; overflow: hidden; }
+  .g-track i { position: absolute; inset: 0 auto 0 0; width: var(--w); background: var(--accent); transform-origin: 0 50%; transform: scaleX(0); transition: transform 1.4s var(--ease-out) 0.3s; }
+  .lift.in .g-track i { transform: none; }
+</style>
+
+<script>
+  // plates slide onto the bar when a lift scrolls in, and again when you hover it
+  const lifts = [...document.querySelectorAll(".lift")];
+  lifts.forEach((el) => el.querySelectorAll(".pl").forEach((p, i) => p.style.setProperty("--k", String(i % 8))));
+  const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { threshold: 0.4 });
+  lifts.forEach((el) => {
+    io.observe(el);
+    el.addEventListener("mouseenter", () => { el.classList.remove("in"); void el.offsetWidth; requestAnimationFrame(() => el.classList.add("in")); });
+  });
+</script>

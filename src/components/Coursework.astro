@@ -73,47 +73,47 @@ const terms = [
 </div>
 
 <style>
-  .cw { margin-top: 1rem; }
-  .cw-tabs { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 2.5rem; }
+  .cw { margin-top: 0.5rem; }
+  .cw-tabs { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 2rem; }
   .cw-tab {
-    cursor: pointer; background: none;
-    font-family: var(--sans); font-size: 0.62rem; font-weight: 400;
-    letter-spacing: 0.22em; text-transform: uppercase;
-    padding: 0.6rem 1.2rem; border: 1px solid var(--rule); border-radius: 999px; color: var(--muted);
+    cursor: pointer; background: none; color: var(--ink);
+    font-family: var(--mono); font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.02em;
+    padding: 0.55rem 1rem; border: 1px solid var(--rule); border-radius: 999px;
     transition: color 0.4s var(--ease), background 0.4s var(--ease), border-color 0.4s var(--ease);
   }
-  .cw-tab:hover { color: var(--ink); border-color: var(--accent-dim); }
-  .cw-tab.on { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+  .cw-tab:hover { border-color: var(--ink); }
+  .cw-tab.on { background: var(--ink); border-color: var(--ink); color: var(--paper); }
 
-  .cw-panel { display: none; animation: fadeUp 0.6s var(--ease); }
+  .cw-panel { display: none; }
   .cw-panel.on { display: block; }
-  @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+  .cw-panel.on .mod { animation: rowIn 0.8s var(--ease-out) both; }
+  .cw-panel.on .mod:nth-of-type(2) { animation-delay: 40ms; } .cw-panel.on .mod:nth-of-type(3) { animation-delay: 80ms; }
+  .cw-panel.on .mod:nth-of-type(4) { animation-delay: 120ms; } .cw-panel.on .mod:nth-of-type(5) { animation-delay: 160ms; }
+  .cw-panel.on .mod:nth-of-type(6) { animation-delay: 200ms; } .cw-panel.on .mod:nth-of-type(7) { animation-delay: 240ms; }
+  @keyframes rowIn { from { opacity: 0; transform: translateY(14px); clip-path: inset(0 0 100% 0); } to { opacity: 1; transform: none; clip-path: inset(0 0 0 0); } }
 
   .cw-label {
-    font-family: var(--sans); font-size: 0.6rem; font-weight: 400;
-    letter-spacing: 0.24em; text-transform: uppercase; color: var(--muted);
-    margin: 0 0 1.5rem; display: flex; flex-wrap: wrap; gap: 1rem; align-items: center;
+    font-family: var(--mono); font-size: 0.66rem; text-transform: uppercase; color: var(--muted);
+    margin: 0 0 1rem; display: flex; flex-wrap: wrap; gap: 1rem; align-items: center;
   }
-  .cw-note { color: var(--accent); border-left: 1px solid var(--rule); padding-left: 1rem; }
+  .cw-note { color: var(--ink); border-left: 1px solid var(--rule); padding-left: 1rem; }
+  .cw-note::before { content: "● "; color: var(--accent); }
 
   .mod {
-    display: grid; grid-template-columns: 8rem 1fr; gap: 1.5rem; align-items: baseline;
-    padding: 1rem 0.75rem; border-top: 1px solid var(--rule);
-    position: relative; transition: padding-left 0.4s var(--ease);
+    display: grid; grid-template-columns: 9rem 1fr auto; gap: 1.5rem; align-items: baseline;
+    padding: 0.95rem 0.4rem; border-top: 1px solid var(--rule); position: relative;
+    transition: padding-left 0.5s var(--ease), background 0.4s var(--ease);
   }
   .mod:last-child { border-bottom: 1px solid var(--rule); }
-  .mod::before {
-    content: ""; position: absolute; left: 0; top: 50%; transform: translateY(-50%);
-    width: 2px; height: 0; background: var(--accent); transition: height 0.4s var(--ease);
-  }
-  .mod:hover::before { height: 60%; }
-  .mod:hover { padding-left: 1.25rem; }
-  @media (max-width: 620px) { .mod { grid-template-columns: 1fr; gap: 0.2rem; } }
+  .mod::after { content: "Core"; font-family: var(--mono); font-size: 0.6rem; text-transform: uppercase; color: var(--muted); }
+  .mod.ge::after { content: "Elective"; }
+  .mod:hover { padding-left: 1rem; background: var(--paper-2); }
+  @media (max-width: 620px) { .mod { grid-template-columns: 1fr auto; gap: 0.2rem 1rem; } .m-title { grid-column: 1 / -1; grid-row: 2; } }
 
-  .m-code { font-family: var(--sans); font-size: 0.66rem; letter-spacing: 0.16em; color: var(--accent); }
-  .mod.ge .m-code { color: #4a4238; }
-  .m-title { font-family: var(--serif); font-size: 1.15rem; font-weight: 400; color: var(--ink); }
-  .mod.ge .m-title { color: var(--muted); }
+  .m-code { font-family: var(--mono); font-size: 0.72rem; color: var(--ink); }
+  .mod.ge .m-code { color: var(--muted); }
+  .m-title { font-family: var(--display); font-size: clamp(1.1rem, 1.7vw, 1.4rem); font-weight: 500; letter-spacing: -0.02em; color: var(--ink); }
+  .mod.ge .m-title { color: var(--ink-2); }
 </style>
 
 <script>

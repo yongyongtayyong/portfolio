@@ -64,60 +64,39 @@ const bowed = [
 <p class="readout" id="lastNote"></p>
 
 <style>
-  .inst-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 1.5rem; margin-top: 3.5rem; }
-  .inst {
-    border: 1px solid var(--rule); border-radius: 2px; background: var(--panel); padding: 1.5rem;
-    transition: border-color 0.6s var(--ease), transform 0.6s var(--ease);
-  }
-  .inst:hover { border-color: var(--accent-dim); transform: translateY(-6px); }
-  .inst-stage { border-radius: 2px; background: #0e0c09; padding: 0.9rem 0.5rem; margin-bottom: 1.3rem; }
+  .inst-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: var(--pad); margin-top: 3rem; }
+  .inst { border: 1px solid var(--ink); padding: 1.2rem; background: var(--paper); transition: transform 0.55s var(--ease-back), box-shadow 0.55s var(--ease-back); }
+  .inst:hover { transform: translate(-4px, -4px); box-shadow: 6px 6px 0 var(--ink); }
+  .inst-stage { background: var(--paper-2); padding: 0.9rem 0.5rem; margin-bottom: 1.2rem; }
   .inst-stage svg { width: 100%; height: auto; display: block; overflow: visible; }
-  .inst-name { font-family: var(--serif); font-size: 1.35rem; font-weight: 400; margin: 0; }
-  .inst-sub {
-    font-family: var(--sans); font-size: 0.56rem; font-weight: 400;
-    letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin: 0.5rem 0 0;
-  }
-  .readout {
-    font-family: var(--sans); font-size: 0.62rem; letter-spacing: 0.24em;
-    text-transform: uppercase; color: var(--accent); min-height: 1.4em;
-    margin-top: 1.75rem; padding-top: 1.25rem; border-top: 1px solid var(--rule);
-  }
+  .inst-name { font-family: var(--display); font-weight: 600; font-size: 1.7rem; letter-spacing: -0.04em; line-height: 1; margin: 0; }
+  .inst-sub { font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.02em; text-transform: uppercase; color: var(--muted); margin: 0.5rem 0 0; }
+  .readout { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--accent); min-height: 1.4em; margin-top: 1.4rem; padding-top: 1rem; border-top: 1px solid var(--rule); }
 
   .key { cursor: pointer; }
-  .wk rect {
-    fill: #e8e2d6; stroke: #0c0a08; stroke-width: 1.2;
-    transform-box: view-box; transform-origin: center; transition: fill 0.14s, transform 0.1s;
-  }
-  .wk:hover rect { fill: #fbf7ee; }
+  .wk rect { fill: var(--paper); stroke: var(--ink); stroke-width: 1.2; transform-box: view-box; transform-origin: center; transition: fill 0.18s, transform 0.22s var(--ease-back); }
+  .wk:hover rect { fill: var(--paper-3); }
   .wk.hit rect { fill: var(--accent); transform: translateY(4px); }
-  .k-lab { text-anchor: middle; font-family: var(--sans); font-size: 8.5px; fill: #8b8378; pointer-events: none; letter-spacing: 0.08em; }
-  .wk.hit .k-lab { fill: #0c0a08; }
+  .k-lab { text-anchor: middle; font-family: var(--mono); font-size: 8px; fill: var(--muted); pointer-events: none; }
+  .wk.hit .k-lab { fill: var(--on-accent); }
+  .bk rect { fill: var(--ink); stroke: var(--ink); stroke-width: 1; transform-box: view-box; transform-origin: center; transition: fill 0.18s, transform 0.22s var(--ease-back); }
+  .bk:hover rect { fill: var(--ink-2); }
+  .bk.hit rect { fill: var(--accent); transform: translateY(4px); }
+  .b-lab { text-anchor: middle; font-family: var(--mono); font-size: 6.5px; fill: var(--paper-3); pointer-events: none; }
+  .bk.hit .b-lab { fill: var(--on-accent); }
 
-  .bk rect {
-    fill: #14100c; stroke: #0c0a08; stroke-width: 1;
-    transform-box: view-box; transform-origin: center; transition: fill 0.14s, transform 0.1s;
-  }
-  .bk:hover rect { fill: #241e17; }
-  .bk.hit rect { fill: var(--accent-dim); transform: translateY(4px); }
-  .b-lab { text-anchor: middle; font-family: var(--sans); font-size: 7px; fill: #6b6154; pointer-events: none; }
-  .bk.hit .b-lab { fill: #0c0a08; }
-
-  .fb { fill: #16120e; stroke: var(--rule); }
-  .fh { stroke: #2e2820; stroke-width: 2.5; fill: none; stroke-linecap: round; }
-  .bridge { stroke: #3a332a; stroke-width: 3; stroke-linecap: round; }
-  .str line { stroke: #c9c3b6; stroke-width: 1.4; transform-box: view-box; transform-origin: center; transition: stroke 0.15s; }
-  .str:hover line { stroke: #fbf7ee; }
-  .str.hit line { stroke: var(--accent); animation: vib 0.09s linear 8; }
-  @keyframes vib { 0%, 100% { transform: translateX(-1.2px); } 50% { transform: translateX(1.2px); } }
-  .s-lab { text-anchor: middle; font-family: var(--sans); font-size: 8px; fill: #4a4238; pointer-events: none; letter-spacing: 0.06em; }
+  .fb { fill: var(--paper-3); stroke: var(--ink); stroke-width: 1.5; }
+  .fh { stroke: var(--ink); stroke-width: 2.5; fill: none; stroke-linecap: round; }
+  .bridge { stroke: var(--ink); stroke-width: 3; stroke-linecap: round; }
+  .str line { stroke: var(--ink-2); stroke-width: 1.4; transform-box: view-box; transform-origin: center; transition: stroke 0.15s; }
+  .str:hover line { stroke: var(--ink); stroke-width: 2; }
+  .str.hit line { stroke: var(--accent); animation: vib 0.07s linear 10; }
+  @keyframes vib { 0%, 100% { transform: translateX(-1.4px); } 50% { transform: translateX(1.4px); } }
+  .s-lab { text-anchor: middle; font-family: var(--mono); font-size: 8px; fill: var(--muted); pointer-events: none; }
   .str.hit .s-lab { fill: var(--accent); }
-
-  .bow { transform-box: view-box; transform-origin: center; animation: sweep 3.6s ease-in-out infinite; }
-  .bow rect { fill: var(--accent); opacity: 0.4; }
-  @keyframes sweep {
-    0%, 100% { transform: translateY(46px) rotate(-1.5deg); }
-    50% { transform: translateY(120px) rotate(1.5deg); }
-  }
+  .bow { transform-box: view-box; transform-origin: center; animation: sweep 3.6s var(--ease-io) infinite; }
+  .bow rect { fill: var(--accent); opacity: 0.55; }
+  @keyframes sweep { 0%, 100% { transform: translateY(46px) rotate(-1.5deg); } 50% { transform: translateY(120px) rotate(1.5deg); } }
   @media (prefers-reduced-motion: reduce) { .bow { animation: none; } }
 </style>
 

@@ -27,17 +27,34 @@ const { kind = "bot", index = 1, img = "", alt = "" } = Astro.props;
 
       {kind === "pulse" ? (
         <g>
-          <g class="rig">
-            <circle cx="200" cy="68" r="17" />
-            <path d="M170 106 H230 M200 106 V168 M170 106 L150 146 L158 182 M230 106 L250 146 L242 182 M178 168 L170 218 L180 252 M222 168 L230 218 L220 252 M178 168 H222" />
-          </g>
-          <g class="joints">
-            <circle cx="170" cy="106" r="4" /><circle cx="230" cy="106" r="4" />
-            <circle cx="150" cy="146" r="4" /><circle cx="250" cy="146" r="4" />
-            <circle cx="178" cy="168" r="4" /><circle cx="222" cy="168" r="4" />
-            <circle cx="170" cy="218" r="4" /><circle cx="230" cy="218" r="4" />
-          </g>
-          <path class="wave" d="M20 278 H110 l10 -34 l13 58 l11 -24 h34 l9 -16 l10 16 H380" />
+          <rect x="140" y="28" width="120" height="244" rx="18" class="win" />
+          <rect x="182" y="38" width="36" height="6" rx="3" class="dot" />
+          <circle cx="200" cy="112" r="40" fill="none" stroke="var(--paper-3)" stroke-width="10" />
+          <circle cx="200" cy="112" r="40" fill="none" stroke="var(--accent)" stroke-width="10" stroke-linecap="round" pathLength="100" stroke-dasharray="72 100" transform="rotate(-90 200 112)" class="ring" />
+          <rect x="186" y="106" width="28" height="7" rx="3.5" class="txt-d" />
+          <rect x="160" y="172" width="80" height="18" rx="9" class="bub" />
+          <rect x="160" y="198" width="80" height="18" rx="9" class="bub" />
+          <rect x="160" y="224" width="52" height="18" rx="9" class="bub-a" />
+          <rect x="168" y="178" width="40" height="6" rx="3" class="txt" />
+          <rect x="168" y="204" width="54" height="6" rx="3" class="txt" />
+        </g>
+      ) : null}
+
+      {kind === "seo" ? (
+        <g>
+          <rect x="40" y="45" width="320" height="210" rx="4" class="win" />
+          <line x1="40" y1="80" x2="360" y2="80" class="hair" />
+          <circle cx="60" cy="62" r="3.5" class="dot" /><circle cx="76" cy="62" r="3.5" class="dot" /><circle cx="92" cy="62" r="3.5" class="dot" />
+          <rect x="66" y="98" width="230" height="26" rx="13" class="bub" />
+          <circle cx="282" cy="111" r="6" fill="none" stroke="var(--ink)" stroke-width="2" /><line x1="286" y1="115" x2="291" y2="120" class="hair" />
+          <rect x="66" y="142" width="268" height="30" rx="3" class="bub-a" />
+          <text x="78" y="162" font-family="var(--mono)" font-size="12" fill="var(--ink)">#1</text>
+          <rect x="104" y="153" width="150" height="7" rx="3.5" fill="var(--ink)" opacity="0.7" />
+          <rect x="66" y="186" width="210" height="7" rx="3.5" class="txt" />
+          <rect x="66" y="200" width="150" height="6" rx="3" class="txt" opacity="0.6" />
+          <rect x="66" y="222" width="190" height="7" rx="3.5" class="txt" />
+          <path d="M300 236 L318 214 L330 222 L346 196" fill="none" stroke="var(--accent)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M338 196 L346 196 L346 204" fill="none" stroke="var(--accent)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
         </g>
       ) : null}
 
@@ -81,52 +98,49 @@ const { kind = "bot", index = 1, img = "", alt = "" } = Astro.props;
 
 <style>
   .cover {
-    position: relative; aspect-ratio: 4 / 3; border-radius: 2px;
-    margin-bottom: 1.4rem; overflow: hidden;
-    background: #0e0c09; border: 1px solid var(--rule);
+    position: relative; aspect-ratio: 4 / 3; overflow: hidden;
+    background: var(--paper-2); border: 1px solid var(--rule);
   }
   .cover svg, .photo { width: 100%; height: 100%; display: block; }
-  .photo { object-fit: cover; filter: grayscale(1) sepia(0.15) contrast(1.05); transition: filter 0.7s var(--ease); }
-  :global(.card):hover .photo { filter: none; }
-  .cover svg { transition: transform 0.8s var(--ease); }
-  :global(.card):hover .cover svg { transform: scale(1.04); }
-  .idx {
-    position: absolute; bottom: 0.7rem; right: 0.95rem;
-    font-family: var(--sans); font-size: 0.6rem; letter-spacing: 0.2em;
-    color: var(--muted); opacity: 0.7;
-  }
+  .photo { object-fit: cover; filter: grayscale(1) contrast(1.05); transition: filter 0.8s var(--ease), transform 1.2s var(--ease-out); }
+  :global(.card):hover .photo { filter: none; transform: scale(1.04); }
+  .cover svg { transition: transform 1.2s var(--ease-out); }
+  :global(.card):hover .cover svg { transform: scale(1.05); }
+  .idx { position: absolute; top: 0.7rem; left: 0.8rem; font-family: var(--mono); font-size: 0.6rem; color: var(--muted); }
 
-  .win { fill: #16120e; stroke: var(--rule); }
-  .hair { stroke: var(--rule); }
-  .dot { fill: var(--rule); }
-  .bub { fill: #221c15; }
+  .win { fill: var(--paper); stroke: var(--ink); stroke-width: 1.5; }
+  .ring { transition: stroke-dasharray 1.2s var(--ease-out); }
+  .cover:hover .ring { stroke-dasharray: 96 100; }
+  .hair { stroke: var(--ink); stroke-width: 1.5; }
+  .dot { fill: var(--ink); }
+  .bub { fill: var(--paper-3); }
   .bub-a { fill: var(--accent); }
-  .txt { fill: #4a4238; }
-  .txt-d { fill: #0c0a08; opacity: 0.5; }
-  .pip { fill: var(--muted); animation: blip 1.4s infinite; animation-delay: calc(var(--i) * 0.18s); }
-  @keyframes blip { 0%, 60%, 100% { opacity: 0.3; } 30% { opacity: 1; } }
+  .txt { fill: var(--muted); }
+  .txt-d { fill: var(--ink); opacity: 0.55; }
+  .pip { fill: var(--ink); animation: blip 1.4s infinite; animation-delay: calc(var(--i) * 0.18s); }
+  @keyframes blip { 0%, 60%, 100% { opacity: 0.25; transform: translateY(0); } 30% { opacity: 1; transform: translateY(-3px); } }
 
-  .rig { stroke: #3a332a; stroke-width: 2; fill: none; stroke-linecap: round; }
+  .rig { stroke: var(--ink); stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
   .joints circle { fill: var(--accent); }
   .wave {
-    stroke: var(--accent); stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round;
-    stroke-dasharray: 620; stroke-dashoffset: 620; animation: draw 3.4s var(--ease) infinite;
+    stroke: var(--accent); stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round;
+    stroke-dasharray: 620; stroke-dashoffset: 620; animation: draw 3.4s var(--ease-io) infinite;
   }
   @keyframes draw { 0% { stroke-dashoffset: 620; } 55%, 100% { stroke-dashoffset: -620; } }
 
-  .band { fill: var(--accent); opacity: 0.05; }
-  .edge { stroke: var(--accent); opacity: 0.25; stroke-dasharray: 4 6; }
-  .curve { fill: none; stroke-width: 2; stroke-linecap: round; stroke-dasharray: 700; animation: trace 2.6s var(--ease) forwards; }
-  .curve.a { stroke: #4a4238; }
-  .curve.b { stroke: var(--accent); animation-delay: 0.25s; }
+  .band { fill: var(--accent); opacity: 0.1; }
+  .edge { stroke: var(--ink); opacity: 0.35; stroke-dasharray: 4 6; }
+  .curve { fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-dasharray: 700; animation: trace 2.6s var(--ease-out) forwards; }
+  .curve.a { stroke: var(--muted); }
+  .curve.b { stroke: var(--ink); animation-delay: 0.25s; }
   @keyframes trace { from { stroke-dashoffset: 700; } to { stroke-dashoffset: 0; } }
-  .mark { fill: #0e0c09; stroke: var(--accent); stroke-width: 2; }
-  .mark.exit { stroke: #5a5145; }
+  .mark { fill: var(--paper); stroke: var(--accent); stroke-width: 2.5; }
+  .mark.exit { stroke: var(--ink); }
 
-  .words rect { fill: #262019; animation: fade 4.2s ease-in-out infinite; animation-delay: calc(var(--i) * 0.22s); }
-  .words rect.hi { fill: var(--accent); opacity: 0.8; }
-  @keyframes fade { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
-  .bars rect { fill: #332c22; }
-  .bars rect.hi { fill: var(--accent); }
-  .axis { stroke: var(--rule); stroke-width: 2; }
+  .words rect { fill: var(--paper-3); animation: fade 4.2s ease-in-out infinite; animation-delay: calc(var(--i) * 0.22s); }
+  .words rect.hi { fill: var(--accent); }
+  @keyframes fade { 0%, 100% { opacity: 0.45; } 50% { opacity: 1; } }
+  .bars rect { fill: var(--paper-3); }
+  .bars rect.hi { fill: var(--ink); }
+  .axis { stroke: var(--ink); stroke-width: 2; }
 </style>

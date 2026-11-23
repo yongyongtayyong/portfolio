@@ -1,0 +1,132 @@
+---
+import Layout from '../layouts/Layout.astro';
+import performances from '../data/performances.json';
+
+// Turn whatever link was pasted into something we can show and play.
+const parse = (url = "") => {
+  let m;
+  if ((m = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|shorts\/|embed\/|live\/))([\w-]{11})/))) return { type: "youtube", id: m[1], thumb: `https://i.ytimg.com/vi/${m[1]}/hqdefault.jpg`, embed: `https://www.youtube-nocookie.com/embed/${m[1]}?autoplay=1&rel=0` };
+  if ((m = url.match(/instagram\.com\/(?:p|reel|reels)\/([\w-]+)/))) return { type: "instagram", embed: `https://www.instagram.com/p/${m[1]}/embed` };
+  if ((m = url.match(/tiktok\.com\/.*\/video\/(\d+)/))) return { type: "tiktok", embed: `https://www.tiktok.com/embed/v2/${m[1]}` };
+  if (/\.(mp4|webm|mov|m4v)$/i.test(url)) return { type: "file", src: url };
+  return { type: "link", href: url };
+};
+const items = performances
+  .map((p, i) => ({ ...p, i, media: parse(p.url) }))
+  .sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")));
+const n = (k) => items.filter((p) => p.instrument === k).length;
+const fmtDate = (d) => {
+  if (!d) return "";
+  const [y, m] = String(d).split("-");
+  return m ? new Date(+y, +m - 1, 1).toLocaleString("en-GB", { month: "short", year: "numeric" }) : y;
+};
+---
+
+<Layout title="Music — Tay Yong" description="Keys and strings: performances by Tay Yong.">
+  <section class="m-hero wrap">
+    <div class="meta mono">
+      <p class="reveal" data-now><span data-decode data-now>Music</span><br /><span class="muted">Performances</span></p>
+      <p class="reveal" data-now style="--d:80ms"><span>Keys</span><br /><span class="muted">{n("keys")} so far</span></p>
+      <p class="reveal" data-now style="--d:160ms"><span>Strings</span><br /><span class="muted">{n("strings")} so far</span></p>
+      <p class="reveal" data-now style="--d:240ms"><span>Local time</span><br /><span class="muted" data-clock="">00:00:00</span></p>
+    </div>
+    <div class="fitbox"><h1 class="display m-title" data-fit="0.998" data-split="chars" data-now aria-label="Music">Music</h1></div>
+    <div class="m-tabs mono" role="tablist">
+      <button type="button" data-f="all" class="on">All <sup>{items.length}</sup></button>
+      <button type="button" data-f="keys">Keys <sup>{n("keys")}</sup></button>
+      <button type="button" data-f="strings">Strings <sup>{n("strings")}</sup></button>
+      <a class="ulink" href="/personal#music" data-wipe="Personal">← Back to personal</a>
+    </div>
+  </section>
+
+  <section class="wrap m-list">
+    {items.length === 0 && <p class="m-empty mono muted">New recordings are on their way.</p>}
+    <div class="m-grid">
+      {items.map((p, k) => (
+        <button type="button" class="perf reveal" data-inst={p.instrument} style={"--d:" + Math.min(k, 8) * 60 + "ms"}
+          data-type={p.media.type} data-embed={p.media.embed || ""} data-src={p.media.src || ""} data-href={p.media.href || ""} data-title={p.title}>
+          <span class="thumb">
+            {p.media.type === "youtube" && <img src={p.media.thumb} alt="" loading="lazy" />}
+            {p.media.type === "file" && <video src={p.media.src + "#t=0.5"} muted playsinline preload="metadata"></video>}
+            {(p.media.type === "instagram" || p.media.type === "tiktok" || p.media.type === "link") && <span class="plat mono">{p.media.type === "link" ? "Watch" : p.media.type}</span>}
+            <span class="play" aria-hidden="true">▶</span>
+          </span>
+          <span class="p-meta mono"><span>{p.instrument === "keys" ? "Keys" : "Strings"}{p.piece ? " · " + p.piece : ""}</span><span>{fmtDate(p.date)}</span></span>
+          <span class="p-title">{p.title}</span>
+          {p.where && <span class="p-where mono muted">{p.where}</span>}
+        </button>
+      ))}
+    </div>
+  </section>
+
+  <dialog class="viewer" data-viewer>
+    <div class="v-bar mono"><span data-v-title></span><button type="button" data-v-close>Close ✕</button></div>
+    <div class="v-frame" data-v-frame></div>
+  </dialog>
+</Layout>
+
+<script>
+  const grid = document.querySelector(".m-grid");
+  const tabs = [...document.querySelectorAll("[data-f]")];
+  const setF = (f) => {
+    tabs.forEach((t) => t.classList.toggle("on", t.dataset.f === f));
+    grid?.querySelectorAll(".perf").forEach((p) => { p.hidden = f !== "all" && p.dataset.inst !== f; });
+  };
+  tabs.forEach((t) => t.addEventListener("click", () => { setF(t.dataset.f); history.replaceState(null, "", t.dataset.f === "all" ? location.pathname : "#" + t.dataset.f); }));
+  const h = location.hash.slice(1);
+  if (h === "keys" || h === "strings") setF(h);
+
+  const dlg = document.querySelector("[data-viewer]");
+  const frame = document.querySelector("[data-v-frame]");
+  const close = () => { frame.innerHTML = ""; dlg.close(); };
+  document.querySelector("[data-v-close]")?.addEventListener("click", close);
+  dlg?.addEventListener("click", (e) => { if (e.target === dlg) close(); });
+  dlg?.addEventListener("close", () => { frame.innerHTML = ""; });
+  grid?.addEventListener("click", (e) => {
+    const b = e.target.closest(".perf"); if (!b) return;
+    const { type, embed, src, href, title } = b.dataset;
+    if (type === "link") { window.open(href, "_blank", "noopener"); return; }
+    document.querySelector("[data-v-title]").textContent = title;
+    frame.className = "v-frame " + type;
+    frame.innerHTML = type === "file"
+      ? `<video src="${src}" controls autoplay playsinline></video>`
+      : `<iframe src="${embed}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen title="${title.replace(/"/g, "&quot;")}"></iframe>`;
+    dlg.showModal();
+  });
+</script>
+
+<style>
+  .m-hero { padding-top: 4.2rem; }
+  .meta { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--pad); padding: 0.9rem 0; border-bottom: 1px solid var(--ink); }
+  .meta p { margin: 0; }
+  @media (max-width: 760px) { .meta { grid-template-columns: 1fr 1fr; row-gap: 0.8rem; } }
+  .fitbox { overflow: hidden; padding-top: 0.08em; }
+  .m-title { white-space: nowrap; font-size: 20vw; display: inline-block; }
+  .m-tabs { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; padding: 0.8rem 0; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); font-size: 0.74rem; text-transform: uppercase; }
+  .m-tabs button { font: inherit; text-transform: inherit; color: var(--ink); background: none; border: 1px solid var(--ink); border-radius: 999px; padding: 0.4rem 0.8rem; cursor: pointer; transition: background 0.3s, color 0.3s; }
+  .m-tabs button.on, .m-tabs button:hover { background: var(--ink); color: var(--paper); }
+  .m-tabs sup { opacity: 0.6; }
+  .m-tabs a { margin-left: auto; text-decoration: none; }
+  .m-list { padding-top: 1.6rem; }
+  .m-empty { font-size: 0.8rem; text-transform: uppercase; padding: 2rem 0; }
+  .m-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr)); gap: 2rem var(--pad); }
+  .perf { display: flex; flex-direction: column; gap: 0.5rem; padding: 0; background: none; border: 0; color: var(--ink); text-align: left; cursor: pointer; }
+  .perf[hidden] { display: none; }
+  .thumb { position: relative; display: block; aspect-ratio: 16 / 10; overflow: hidden; background: var(--ink); }
+  .thumb img, .thumb video { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1); transition: filter 0.6s var(--ease), transform 1s var(--ease-out); }
+  .perf:hover .thumb img, .perf:hover .thumb video { filter: none; transform: scale(1.04); }
+  .plat { position: absolute; inset: 0; display: grid; place-items: center; color: var(--paper); font-size: 0.8rem; text-transform: uppercase; }
+  .play { position: absolute; right: 0.8rem; bottom: 0.8rem; width: 3rem; height: 3rem; border-radius: 50%; display: grid; place-items: center; background: var(--accent); color: var(--on-accent); font-size: 0.9rem; transform: scale(0.85); transition: transform 0.5s var(--ease-back); }
+  .perf:hover .play { transform: scale(1.08); }
+  .p-meta { display: flex; justify-content: space-between; gap: 1rem; border-top: 1px solid var(--ink); padding-top: 0.5rem; font-size: 0.7rem; text-transform: uppercase; }
+  .p-title { font-family: var(--display); font-weight: 600; font-size: 1.5rem; letter-spacing: -0.035em; line-height: 1.05; }
+  .p-where { font-size: 0.7rem; text-transform: uppercase; }
+
+  .viewer { width: min(64rem, 94vw); padding: 0; border: 1px solid var(--ink); background: var(--paper); color: var(--ink); }
+  .viewer::backdrop { background: color-mix(in srgb, var(--paper) 60%, transparent); backdrop-filter: blur(8px); }
+  .v-bar { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 0.7rem 0.9rem; font-size: 0.74rem; text-transform: uppercase; border-bottom: 1px solid var(--ink); }
+  .v-bar button { font: inherit; text-transform: inherit; background: none; border: 0; color: var(--ink); cursor: pointer; }
+  .v-frame { aspect-ratio: 16 / 9; background: #000; }
+  .v-frame.instagram, .v-frame.tiktok { aspect-ratio: 9 / 14; max-height: 80vh; margin: 0 auto; }
+  .v-frame iframe, .v-frame video { width: 100%; height: 100%; border: 0; display: block; }
+</style>

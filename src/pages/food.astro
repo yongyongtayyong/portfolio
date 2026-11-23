@@ -1,0 +1,113 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { buildFood } from '../data/food.js';
+import { LAND, RIVERS, VIEWS, OUTSIDE, ABROAD } from '../data/nyc-geo.js';
+import '../styles/food.css';
+
+const food = buildFood();
+const metro = food.places.filter((p) => p.state === "ny" || p.state === "nj");
+const rated = metro.filter((p) => p.rating != null);
+const avg = (rated.reduce((s, p) => s + p.rating, 0) / rated.length).toFixed(1);
+const hoods = new Set(metro.map((p) => p.area)).size;
+
+// destinations, merged NY + NJ into one "map" row
+const dests = Object.entries(food.destinations).map(([key, d]) => {
+  const ps = food.places.filter((p) => p.state === key).sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
+  const r = ps.filter((p) => p.rating != null);
+  return { key, ...d, n: ps.length, avg: r.length ? (r.reduce((s, p) => s + p.rating, 0) / r.length).toFixed(1) : "—", top: ps[0], places: ps };
+});
+const payload = JSON.stringify({ ...food, geo: { LAND, RIVERS, VIEWS, OUTSIDE, ABROAD } }).replace(/</g, "\\u003c");
+---
+
+<Layout title="Food — Tay Yong" description="Every place Tay Yong has eaten in New York, New Jersey and beyond, scored out of ten and mapped by neighbourhood.">
+  <section class="f-hero wrap">
+    <div class="meta mono">
+      <p class="reveal" data-now><span data-decode data-now>Food atlas</span><br /><span class="muted">Index — 2026</span></p>
+      <p class="reveal" data-now style="--d:80ms"><span>Logged</span><br /><span class="muted"><span data-count={food.places.length}>0</span> places, 6 places on earth</span></p>
+      <p class="reveal" data-now style="--d:160ms"><span>Scored</span><br /><span class="muted">Out of ten, by me, honestly</span></p>
+      <p class="reveal" data-now style="--d:240ms"><span>Local time</span><br /><span class="muted" data-clock="">00:00:00</span></p>
+    </div>
+    <div class="fitbox"><h1 class="display f-title" data-fit="0.998" data-split="chars" data-now aria-label="Food atlas"><span>Food</span><span>Atlas</span></h1></div>
+    <div class="tags mono">
+      {dests.map((d, i) => <a class="bracket reveal" data-now style={"--d:" + (500 + i * 60) + "ms"} href={d.map ? "#atlas" : "#map-" + d.key} data-no-wipe>{d.name} <span class="muted">{String(d.n).padStart(2, "0")}</span></a>)}
+    </div>
+  </section>
+
+  <!-- world -->
+  <section class="wrap" id="world">
+    <div class="world" data-world aria-label="World map of where I've eaten">
+      <svg viewBox="0 0 1000 466" class="w-svg" aria-hidden="true"><path class="w-dots" d="" /><g class="w-pins"></g></svg>
+      <p class="mono muted w-hint">Tap a pin to open its map</p>
+    </div>
+  </section>
+
+  <!-- the atlas -->
+  <section class="wrap sec" id="atlas">
+    <div class="sec-head"><p class="mono" data-a-kicker>{metro.length} spots</p><h2 class="h-l" data-a-title>New York &amp; New Jersey</h2></div>
+    <div class="dtabs mono" role="tablist" data-dtabs>
+      <button type="button" data-d="ny" class="on">New York &amp; NJ <sup>{metro.length}</sup></button>
+      {Object.entries(ABROAD).map(([k, a]) => <button type="button" data-d={k}>{a.label} <sup>{food.places.filter((p) => p.state === k).length}</sup></button>)}
+    </div>
+    <div class="ny-only">
+
+    <div class="tools">
+      <div class="chips" role="group" aria-label="Cuisine" data-chips></div>
+      <div class="tools-row mono">
+        <div class="seg" role="group" aria-label="Minimum score" data-seg="min">
+          <span class="seg-lab muted">Score</span>
+          <button type="button" data-v="0" class="on">All</button><button type="button" data-v="7">7+</button><button type="button" data-v="8">8+</button><button type="button" data-v="9">9+</button>
+        </div>
+        <div class="seg" role="group" aria-label="Price" data-seg="price">
+          <span class="seg-lab muted">Price</span>
+          <button type="button" data-v="1">$</button><button type="button" data-v="2">$$</button><button type="button" data-v="3">$$$</button>
+        </div>
+        <div class="seg" role="group" aria-label="Colour the map by" data-seg="lens">
+          <span class="seg-lab muted">Shade by</span>
+          <button type="button" data-v="count" class="on">Spots</button><button type="button" data-v="score">Avg score</button>
+        </div>
+        <label class="search"><span class="muted">Find</span><input type="search" placeholder="a spot, a dish…" data-search autocomplete="off" /></label>
+        <button type="button" class="surprise" data-surprise data-cursor="Roll">Surprise me <span aria-hidden="true">⚄</span></button>
+      </div>
+    </div>
+
+    <div class="atlas">
+      <div class="mapbox">
+        <div class="views mono" data-views>
+          {Object.entries(VIEWS).map(([k, v]) => <button type="button" data-view={k} class={k === "all" ? "on" : ""}>{v.label}</button>)}
+        </div>
+        <svg class="map" data-map role="img" aria-label="Map of New York and Jersey City food spots by neighbourhood"></svg>
+        <div class="map-tip mono" data-tip hidden></div>
+        <div class="legend mono" data-legend></div>
+        <button type="button" class="map-back mono" data-back hidden>← All of the city</button>
+      </div>
+      <aside class="panel" data-panel>
+        <div class="p-head">
+          <p class="mono muted" data-p-kicker>New York &amp; New Jersey</p>
+          <h3 class="p-title" data-p-title>Everywhere</h3>
+          <p class="p-stats mono"><span data-p-n>0</span> spots <span class="muted">·</span> avg <span data-p-avg>—</span> <span class="muted">·</span> <span data-p-sort-wrap><button type="button" data-sort="rating" class="on">by score</button> / <button type="button" data-sort="name">A–Z</button></span></p>
+        </div>
+        <ol class="p-list" data-p-list></ol>
+        <p class="p-empty mono muted" data-p-empty hidden>Nothing matches. Loosen a filter.</p>
+      </aside>
+    </div>
+    <div class="outside">
+      <p class="mono muted">Further out</p>
+      <div class="out-cards" data-outside></div>
+    </div>
+    </div>
+    <div class="atlas mini" data-mini hidden>
+      <div class="mapbox"><svg class="map" data-mini-map role="img" aria-label="Map"></svg></div>
+      <aside class="panel">
+        <div class="p-head"><p class="mono muted" data-m-kicker></p><h3 class="p-title" data-m-title></h3><p class="p-stats mono" data-m-stats></p></div>
+        <ol class="p-list open-all" data-m-list></ol>
+      </aside>
+    </div>
+    <p class="mono muted f-note">Maps are hand-drawn and simplified. In New York, each neighbourhood shape is the area closest to its spots, not an official boundary. Some cuisines and prices are my best guess.</p>
+  </section>
+
+  <script type="application/json" id="food-data" set:html={payload}></script>
+</Layout>
+
+<script>
+  import "../scripts/food-atlas.js";
+</script>
